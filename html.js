@@ -14,7 +14,7 @@ exports.enter = {
   tableRow: enterRow
 }
 exports.exit = {
-  data: exitData,
+  codeTextData: exitCodeTextData,
   table: exitTable,
   tableBody: exitBody,
   tableData: exitTableData,
@@ -120,12 +120,12 @@ function exitTableData() {
   }
 }
 
-// Overwrite the default data handler to unescape escaped pipes when they are in
-// code in tables.
-function exitData(token) {
+// Overwrite the default code text data handler to unescape escaped pipes when
+// they are in tables.
+function exitCodeTextData(token) {
   var value = this.sliceSerialize(token)
 
-  if (this.getData('tableAlign') && this.getData('inCodeText')) {
+  if (this.getData('tableAlign')) {
     value = value.replace(/\\([\\|])/g, replace)
   }
 
