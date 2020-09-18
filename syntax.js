@@ -191,7 +191,7 @@ function tokenizeTable(effects, ok, nok) {
 
   function inCellContentHead(code) {
     // EOF, whitespace, pipe
-    if (code === null || code < 5 || code === 32 || code === 124) {
+    if (code === null || code < 0 || code === 32 || code === 124) {
       effects.exit('temporaryTableCellContent')
       return cellBreakHead(code)
     }
@@ -451,7 +451,7 @@ function tokenizeTable(effects, ok, nok) {
 
   function inCellContentBody(code) {
     // EOF, whitespace, pipe
-    if (code === null || code < 5 || code === 32 || code === 124) {
+    if (code === null || code < 0 || code === 32 || code === 124) {
       effects.exit('temporaryTableCellContent')
       return cellBreakBody(code)
     }
