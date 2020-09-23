@@ -479,7 +479,11 @@ function tokenizeTable(effects, ok, nok) {
       return tableBodyClose(code)
     }
 
-    return effects.check(nextPrefixedOrBlank, tableBodyClose, tableBodyContinue)
+    return effects.check(
+      nextPrefixedOrBlank,
+      tableBodyClose,
+      tableBodyContinue
+    )(code)
   }
 
   function tableBodyClose(code) {
