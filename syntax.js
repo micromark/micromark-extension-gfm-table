@@ -2,7 +2,7 @@ exports.flow = {
   null: {tokenize: tokenizeTable, resolve: resolveTable, interruptible: true}
 }
 
-var createSpaceTokenizer = require('micromark/dist/tokenize/partial-space')
+var createSpace = require('micromark/dist/tokenize/factory-space')
 
 var setextUnderlineMini = {tokenize: tokenizeSetextUnderlineMini, partial: true}
 var nextPrefixedOrBlank = {tokenize: tokenizeNextPrefixedOrBlank, partial: true}
@@ -121,7 +121,7 @@ function tokenizeTable(effects, ok, nok) {
   return start
 
   function start(code) {
-    // As we wait on any character, exit for EOF and EOLs.
+    /* istanbul ignore if - used to be passed in beta micromark versions. */
     if (code === null || code === -5 || code === -4 || code === -3) {
       return nok(code)
     }
@@ -230,7 +230,7 @@ function tokenizeTable(effects, ok, nok) {
       setextUnderlineMini,
       nok,
       // Support an indent before the delimiter row.
-      effects.attempt(createSpaceTokenizer('linePrefix', 4), rowStartDelimiter)
+      createSpace(effects, rowStartDelimiter, 'linePrefix', 4)
     )
   }
 
@@ -386,7 +386,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.exit('lineEnding')
     // We checked that it’s not a prefixed or blank line, so we’re certain a
     // body is coming, though it may be indented.
-    return effects.attempt(createSpaceTokenizer('linePrefix'), bodyStart)
+    return createSpace(effects, bodyStart, 'linePrefix', 4)
   }
 
   function bodyStart(code) {
@@ -497,7 +497,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.consume(code)
     effects.exit('lineEnding')
     // Support an optional prefix, then start a body row.
-    return effects.attempt(createSpaceTokenizer('linePrefix'), rowStartBody)
+    return createSpace(effects, rowStartBody, 'linePrefix', 4)
   }
 }
 
