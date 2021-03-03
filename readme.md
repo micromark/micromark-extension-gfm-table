@@ -14,9 +14,8 @@ This syntax extension matches the GFM spec and github.com.
 This package provides the low-level modules for integrating with the micromark
 tokenizer and the micromark HTML compiler.
 
-You probably shouldn’t use this package directly, but instead use
-[`mdast-util-gfm-table`][mdast-util-gfm-table] with
-**[mdast][]**.
+You probably should use this package with
+[`mdast-util-gfm-table`][mdast-util-gfm-table].
 
 ## Install
 
@@ -114,8 +113,6 @@ abide by its terms.
 [to-markdown]: https://github.com/syntax-tree/mdast-util-to-markdown
 
 [remark]: https://github.com/remarkjs/remark
-
-[mdast]: https://github.com/syntax-tree/mdast
 
 [mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
 
