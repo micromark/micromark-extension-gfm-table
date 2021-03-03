@@ -1,6 +1,6 @@
 {
   "name": "micromark-extension-gfm-table",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "micromark extension to support GFM tables",
   "license": "MIT",
   "keywords": [
