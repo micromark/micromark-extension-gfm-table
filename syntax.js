@@ -64,9 +64,12 @@ function resolveTable(events, context) {
 
     if (
       events[index][0] === 'exit' &&
-      (token.type === 'tableCellDivider' || token.type === 'tableRow') &&
       cellStart &&
-      cellStart + 1 < index
+      cellStart + 1 < index &&
+      (token.type === 'tableCellDivider' ||
+        (token.type === 'tableRow' &&
+          (cellStart + 3 < index ||
+            events[cellStart][1].type !== 'whitespace')))
     ) {
       cell = {
         type: inDelimiterRow

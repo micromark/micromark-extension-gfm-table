@@ -97,7 +97,28 @@ test('markdown -> html (micromark)', function (t) {
       htmlExtensions: [html]
     }),
     '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>',
-    'should support rows w/ trailing whitespace'
+    'should support rows w/ trailing whitespace (1)'
+  )
+
+  t.deepEqual(
+    micromark('| a | \n| - |', {extensions: [syntax], htmlExtensions: [html]}),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
+    'should support rows w/ trailing whitespace (2)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - | ', {extensions: [syntax], htmlExtensions: [html]}),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
+    'should support rows w/ trailing whitespace (3)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n| b | ', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>',
+    'should support rows w/ trailing whitespace (4)'
   )
 
   t.end()
