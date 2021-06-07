@@ -1,4 +1,11 @@
 import {factorySpace} from 'micromark-factory-space'
+import {
+  markdownLineEnding,
+  markdownLineEndingOrSpace,
+  markdownSpace
+} from 'micromark-util-character'
+import {codes} from 'micromark-util-symbol/codes.js'
+import {constants} from 'micromark-util-symbol/constants.js'
 
 export const gfmTable = {
   flow: {
@@ -137,7 +144,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.enter('tableRow')
 
     // If we start with a pipe, we open a cell marker.
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       return cellDividerHead(code)
     }
 
@@ -157,13 +164,11 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function cellBreakHead(code) {
-    // EOF, CR, LF, CRLF.
-    if (code === null || code === -5 || code === -4 || code === -3) {
+    if (code === codes.eof || markdownLineEnding(code)) {
       return atRowEndHead(code)
     }
 
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.enter('whitespace')
       effects.consume(code)
       return inWhitespaceHead
@@ -174,8 +179,7 @@ function tokenizeTable(effects, ok, nok) {
       tableHeaderCount++
     }
 
-    // `|`
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       return cellDividerHead(code)
     }
 
@@ -185,8 +189,7 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function inWhitespaceHead(code) {
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.consume(code)
       return inWhitespaceHead
     }
@@ -197,19 +200,23 @@ function tokenizeTable(effects, ok, nok) {
 
   function inCellContentHead(code) {
     // EOF, whitespace, pipe
-    if (code === null || code < 0 || code === 32 || code === 124) {
+    if (
+      code === codes.eof ||
+      code === codes.verticalBar ||
+      markdownLineEndingOrSpace(code)
+    ) {
       effects.exit('temporaryTableCellContent')
       return cellBreakHead(code)
     }
 
     effects.consume(code)
-    // `\`
-    return code === 92 ? inCellContentEscapeHead : inCellContentHead
+    return code === codes.backslash
+      ? inCellContentEscapeHead
+      : inCellContentHead
   }
 
   function inCellContentEscapeHead(code) {
-    // `\` or `|`
-    if (code === 92 || code === 124) {
+    if (code === codes.backslash || code === codes.verticalBar) {
       effects.consume(code)
       return inCellContentHead
     }
@@ -219,7 +226,7 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function atRowEndHead(code) {
-    if (code === null) {
+    if (code === codes.eof) {
       return nok(code)
     }
 
@@ -236,13 +243,13 @@ function tokenizeTable(effects, ok, nok) {
       setextUnderlineMini,
       nok,
       // Support an indent before the delimiter row.
-      factorySpace(effects, rowStartDelimiter, 'linePrefix', 4)
+      factorySpace(effects, rowStartDelimiter, 'linePrefix', constants.tabSize)
     )
   }
 
   function rowStartDelimiter(code) {
     // If there’s another space, or we’re at the EOL/EOF, exit.
-    if (code === null || code < 0 || code === 32) {
+    if (code === codes.eof || markdownLineEndingOrSpace(code)) {
       return nok(code)
     }
 
@@ -251,20 +258,17 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function atDelimiterRowBreak(code) {
-    // EOF, CR, LF, CRLF.
-    if (code === null || code === -5 || code === -4 || code === -3) {
+    if (code === codes.eof || markdownLineEnding(code)) {
       return rowEndDelimiter(code)
     }
 
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.enter('whitespace')
       effects.consume(code)
       return inWhitespaceDelimiter
     }
 
-    // `-`
-    if (code === 45) {
+    if (code === codes.dash) {
       effects.enter('tableDelimiterFiller')
       effects.consume(code)
       hasDash = true
@@ -272,8 +276,7 @@ function tokenizeTable(effects, ok, nok) {
       return inFillerDelimiter
     }
 
-    // `:`
-    if (code === 58) {
+    if (code === codes.colon) {
       effects.enter('tableDelimiterAlignment')
       effects.consume(code)
       effects.exit('tableDelimiterAlignment')
@@ -282,7 +285,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     // If we start with a pipe, we open a cell marker.
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       effects.enter('tableCellDivider')
       effects.consume(code)
       effects.exit('tableCellDivider')
@@ -293,8 +296,7 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function inWhitespaceDelimiter(code) {
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.consume(code)
       return inWhitespaceDelimiter
     }
@@ -304,16 +306,14 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function inFillerDelimiter(code) {
-    // `-`
-    if (code === 45) {
+    if (code === codes.dash) {
       effects.consume(code)
       return inFillerDelimiter
     }
 
     effects.exit('tableDelimiterFiller')
 
-    // `:`
-    if (code === 58) {
+    if (code === codes.colon) {
       effects.enter('tableDelimiterAlignment')
       effects.consume(code)
       effects.exit('tableDelimiterAlignment')
@@ -328,8 +328,7 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function afterLeftAlignment(code) {
-    // `-`
-    if (code === 45) {
+    if (code === codes.dash) {
       effects.enter('tableDelimiterFiller')
       effects.consume(code)
       hasDash = true
@@ -341,20 +340,18 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function afterRightAlignment(code) {
-    // EOF, CR, LF, CRLF.
-    if (code === null || code === -5 || code === -4 || code === -3) {
+    if (code === codes.eof || markdownLineEnding(code)) {
       return rowEndDelimiter(code)
     }
 
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.enter('whitespace')
       effects.consume(code)
       return inWhitespaceDelimiter
     }
 
     // `|`
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       effects.enter('tableCellDivider')
       effects.consume(code)
       effects.exit('tableCellDivider')
@@ -373,7 +370,7 @@ function tokenizeTable(effects, ok, nok) {
       return nok(code)
     }
 
-    if (code === null) {
+    if (code === codes.eof) {
       return tableClose(code)
     }
 
@@ -392,7 +389,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.exit('lineEnding')
     // We checked that it’s not a prefixed or blank line, so we’re certain a
     // body is coming, though it may be indented.
-    return factorySpace(effects, bodyStart, 'linePrefix', 4)
+    return factorySpace(effects, bodyStart, 'linePrefix', constants.tabSize)
   }
 
   function bodyStart(code) {
@@ -404,7 +401,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.enter('tableRow')
 
     // If we start with a pipe, we open a cell marker.
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       return cellDividerBody(code)
     }
 
@@ -422,20 +419,18 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function cellBreakBody(code) {
-    // EOF, CR, LF, CRLF.
-    if (code === null || code === -5 || code === -4 || code === -3) {
+    if (code === codes.eof || markdownLineEnding(code)) {
       return atRowEndBody(code)
     }
 
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.enter('whitespace')
       effects.consume(code)
       return inWhitespaceBody
     }
 
     // `|`
-    if (code === 124) {
+    if (code === codes.verticalBar) {
       return cellDividerBody(code)
     }
 
@@ -445,8 +440,7 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   function inWhitespaceBody(code) {
-    // HT, VS, SP.
-    if (code === -2 || code === -1 || code === 32) {
+    if (markdownSpace(code)) {
       effects.consume(code)
       return inWhitespaceBody
     }
@@ -457,19 +451,23 @@ function tokenizeTable(effects, ok, nok) {
 
   function inCellContentBody(code) {
     // EOF, whitespace, pipe
-    if (code === null || code < 0 || code === 32 || code === 124) {
+    if (
+      code === codes.eof ||
+      code === codes.verticalBar ||
+      markdownLineEndingOrSpace(code)
+    ) {
       effects.exit('temporaryTableCellContent')
       return cellBreakBody(code)
     }
 
     effects.consume(code)
-    // `\`
-    return code === 92 ? inCellContentEscapeBody : inCellContentBody
+    return code === codes.backslash
+      ? inCellContentEscapeBody
+      : inCellContentBody
   }
 
   function inCellContentEscapeBody(code) {
-    // `\` or `|`
-    if (code === 92 || code === 124) {
+    if (code === codes.backslash || code === codes.verticalBar) {
       effects.consume(code)
       return inCellContentBody
     }
@@ -481,7 +479,7 @@ function tokenizeTable(effects, ok, nok) {
   function atRowEndBody(code) {
     effects.exit('tableRow')
 
-    if (code === null) {
+    if (code === codes.eof) {
       return tableBodyClose(code)
     }
 
@@ -503,7 +501,7 @@ function tokenizeTable(effects, ok, nok) {
     effects.consume(code)
     effects.exit('lineEnding')
     // Support an optional prefix, then start a body row.
-    return factorySpace(effects, rowStartBody, 'linePrefix', 4)
+    return factorySpace(effects, rowStartBody, 'linePrefix', constants.tabSize)
   }
 }
 
@@ -514,8 +512,7 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
   return start
 
   function start(code) {
-    // `-`
-    if (code !== 45) {
+    if (code !== codes.dash) {
       return nok(code)
     }
 
@@ -524,7 +521,7 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
   }
 
   function sequence(code) {
-    if (code === 45) {
+    if (code === codes.dash) {
       effects.consume(code)
       return sequence
     }
@@ -533,13 +530,13 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
   }
 
   function whitespace(code) {
-    if (code === -2 || code === -1 || code === 32) {
-      effects.consume(code)
-      return whitespace
+    if (code === codes.eof || markdownLineEnding(code)) {
+      return ok(code)
     }
 
-    if (code === null || code === -5 || code === -4 || code === -3) {
-      return ok(code)
+    if (markdownSpace(code)) {
+      effects.consume(code)
+      return whitespace
     }
 
     return nok(code)
@@ -561,15 +558,14 @@ function tokenizeNextPrefixedOrBlank(effects, ok, nok) {
   }
 
   function whitespace(code) {
-    // VS or SP.
-    if (code === -1 || code === 32) {
+    if (code === codes.virtualSpace || code === codes.space) {
       effects.consume(code)
       size++
-      return size === 4 ? ok : whitespace
+      return size === constants.tabSize ? ok : whitespace
     }
 
     // EOF or whitespace
-    if (code === null || code < 0) {
+    if (code === codes.eof || markdownLineEndingOrSpace(code)) {
       return ok(code)
     }
 

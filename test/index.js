@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import test from 'tape'
 import {micromark} from 'micromark'
-import {gfmTable as syntax, gfmTableHtml as html} from '../index.js'
+import {gfmTable as syntax, gfmTableHtml as html} from '../dev/index.js'
 
 const input = fs.readFileSync(path.join('test', 'input.md'))
 const output = fs.readFileSync(path.join('test', 'output.html'), 'utf8')
