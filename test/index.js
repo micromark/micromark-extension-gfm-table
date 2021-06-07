@@ -4,10 +4,10 @@ import test from 'tape'
 import {micromark} from 'micromark'
 import {gfmTable as syntax, gfmTableHtml as html} from '../index.js'
 
-var input = fs.readFileSync(path.join('test', 'input.md'))
-var output = fs.readFileSync(path.join('test', 'output.html'), 'utf8')
+const input = fs.readFileSync(path.join('test', 'input.md'))
+const output = fs.readFileSync(path.join('test', 'output.html'), 'utf8')
 
-test('markdown -> html (micromark)', function (t) {
+test('markdown -> html (micromark)', (t) => {
   t.deepEqual(
     micromark(input, {
       allowDangerousHtml: true,
