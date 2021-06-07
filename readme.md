@@ -8,14 +8,15 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub flavored markdown [tables][].
+**[micromark][]** extension to support GitHub flavored markdown (GFM)
+[tables][].
 This syntax extension matches the GFM spec and github.com.
 
-This package provides the low-level modules for integrating with the micromark
-tokenizer and the micromark HTML compiler.
+## When to use this
 
-You probably should use this package with
-[`mdast-util-gfm-table`][mdast-util-gfm-table].
+You should probably use [`micromark-extension-gfm`][micromark-extension-gfm]
+instead, which combines this package with other GFM features.
+Alternatively, if you don’t want all of GFM, use this package.
 
 ## Install
 
@@ -28,31 +29,64 @@ Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
 npm install micromark-extension-gfm-table
 ```
 
+## Use
+
+```js
+import {micromark} from 'micromark'
+import {gfmTable, gfmTableHtml} from 'micromark-extension-gfm-table'
+
+const output = micromark('| a |\n| - |', {
+  extensions: [gfmAutolinkLiteral],
+  htmlExtensions: [gfmAutolinkLiteralHtml]
+})
+
+console.log(output)
+```
+
+Yields:
+
+```html
+<table>
+<thead>
+<tr>
+<th>a</th>
+</tr>
+</thead>
+</table>
+```
+
 ## API
 
 This package exports the following identifiers: `gfmTable`, `gfmTableHtml`.
 There is no default export.
 
-### `html`
+The export map supports the endorsed
+[`development` condition](https://nodejs.org/api/packages.html#packages_resolving_user_conditions).
+Run `node --conditions development module.js` to get instrumented dev code.
+Without this condition, production code is loaded.
 
-### `syntax`
+### `gfmTable`
 
-> Note: `syntax` is the default export of this module, `html` is available at
-> `micromark-extension-gfm-table/html`.
+### `gfmTableHtml`
 
-Support [tables][].
-The exports are extensions for the micromark parser (to tokenize tables; can be
-passed in `extensions`) and the default HTML compiler (to compile as `<table>`
-elements; can be passed in `htmlExtensions`).
+An extension for micromark to parse tables (can be passed in
+`extensions`) and one to compile to `<table>` elements (can be passed in
+`htmlExtensions`).
 
 ## Related
 
 *   [`remarkjs/remark`][remark]
     — markdown processor powered by plugins
+*   [`remarkjs/remark-gfm`](https://github.com/remarkjs/remark-gfm)
+    — remark plugin using this and other GFM features
 *   [`micromark/micromark`][micromark]
     — the smallest commonmark-compliant markdown parser that exists
+*   [`micromark/micromark-extension-gfm`][micromark-extension-gfm]
+    — micromark extension combining this with other GFM features
 *   [`syntax-tree/mdast-util-gfm-table`](https://github.com/syntax-tree/mdast-util-gfm-table)
     — mdast utility to support tables
+*   [`syntax-tree/mdast-util-gfm`](https://github.com/syntax-tree/mdast-util-gfm)
+    — mdast utility to support GFM
 *   [`syntax-tree/mdast-util-from-markdown`][from-markdown]
     — mdast parser using `micromark` to create mdast from markdown
 *   [`syntax-tree/mdast-util-to-markdown`][to-markdown]
@@ -120,6 +154,6 @@ abide by its terms.
 
 [remark]: https://github.com/remarkjs/remark
 
-[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
-
 [tables]: https://github.github.com/gfm/#tables-extension-
+
+[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
