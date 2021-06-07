@@ -1,12 +1,11 @@
-var fs = require('fs')
-var path = require('path')
-var test = require('tape')
-var micromark = require('micromark')
-var syntax = require('../syntax.js')
-var html = require('../html.js')
+import fs from 'fs'
+import path from 'path'
+import test from 'tape'
+import {micromark} from 'micromark'
+import {gfmTable as syntax, gfmTableHtml as html} from '../index.js'
 
-var input = fs.readFileSync(path.join(__dirname, 'input.md'))
-var output = fs.readFileSync(path.join(__dirname, 'output.html'), 'utf8')
+var input = fs.readFileSync(path.join('test', 'input.md'))
+var output = fs.readFileSync(path.join('test', 'output.html'), 'utf8')
 
 test('markdown -> html (micromark)', function (t) {
   t.deepEqual(
