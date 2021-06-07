@@ -1,3 +1,11 @@
+/**
+ * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
+ */
+
+/**
+ * @typedef {import('./syntax.js').Align} Align
+ */
+
 const alignment = {
   null: '',
   left: ' align="left"',
@@ -5,11 +13,13 @@ const alignment = {
   center: ' align="center"'
 }
 
+/** @type {HtmlExtension} */
 export const gfmTableHtml = {
   enter: {
     table(token) {
       this.lineEndingIfNeeded()
       this.tag('<table>')
+      // @ts-expect-error Custom.
       this.setData('tableAlign', token._align)
     },
     tableBody() {
@@ -18,7 +28,9 @@ export const gfmTableHtml = {
       this.tag('<tbody>')
     },
     tableData() {
+      /** @type {string|undefined} */
       const align =
+        // @ts-expect-error Custom.
         alignment[this.getData('tableAlign')[this.getData('tableColumn')]]
 
       if (align === undefined) {
@@ -37,6 +49,7 @@ export const gfmTableHtml = {
       this.lineEndingIfNeeded()
       this.tag(
         '<th' +
+          // @ts-expect-error Custom.
           alignment[this.getData('tableAlign')[this.getData('tableColumn')]] +
           '>'
       )
@@ -72,8 +85,11 @@ export const gfmTableHtml = {
       this.tag('</tbody>')
     },
     tableData() {
+      /** @type {number} */
+      // @ts-expect-error Custom.
       const column = this.getData('tableColumn')
 
+      // @ts-expect-error Custom.
       if (column in this.getData('tableAlign')) {
         this.tag('</td>')
         this.setData('tableColumn', column + 1)
@@ -90,14 +106,20 @@ export const gfmTableHtml = {
     },
     tableHeader() {
       this.tag('</th>')
+      // @ts-expect-error Custom.
       this.setData('tableColumn', this.getData('tableColumn') + 1)
     },
     tableRow() {
+      /** @type {Align[]} */
+      // @ts-expect-error Custom.
       const align = this.getData('tableAlign')
+      /** @type {number} */
+      // @ts-expect-error Custom.
       let column = this.getData('tableColumn')
 
       while (column < align.length) {
         this.lineEndingIfNeeded()
+        // @ts-expect-error `null` is fine as an index.
         this.tag('<td' + alignment[align[column]] + '></td>')
         column++
       }
@@ -109,6 +131,11 @@ export const gfmTableHtml = {
   }
 }
 
+/**
+ * @param {string} $0
+ * @param {string} $1
+ * @returns {string}
+ */
 function replace($0, $1) {
   // Pipes work, backslashes don’t (but can’t escape pipes).
   return $1 === '|' ? $1 : $0

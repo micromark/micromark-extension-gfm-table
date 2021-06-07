@@ -1,3 +1,15 @@
+/**
+ * @typedef {import('micromark-util-types').Extension} Extension
+ * @typedef {import('micromark-util-types').Resolver} Resolver
+ * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+ * @typedef {import('micromark-util-types').State} State
+ * @typedef {import('micromark-util-types').Token} Token
+ */
+
+/**
+ * @typedef {'left'|'center'|'right'|null} Align
+ */
+
 import {factorySpace} from 'micromark-factory-space'
 import {
   markdownLineEnding,
@@ -7,6 +19,7 @@ import {
 import {codes} from 'micromark-util-symbol/codes.js'
 import {constants} from 'micromark-util-symbol/constants.js'
 
+/** @type {Extension} */
 export const gfmTable = {
   flow: {
     null: {tokenize: tokenizeTable, resolve: resolveTable, interruptible: true}
@@ -22,21 +35,31 @@ const nextPrefixedOrBlank = {
   partial: true
 }
 
+/** @type {Resolver} */
 function resolveTable(events, context) {
-  let length = events.length
   let index = -1
+  /** @type {Token} */
   let token
+  /** @type {boolean|undefined} */
   let inHead
+  /** @type {boolean|undefined} */
   let inDelimiterRow
+  /** @type {boolean|undefined} */
   let inRow
+  /** @type {Token} */
   let cell
+  /** @type {Token} */
   let content
+  /** @type {Token} */
   let text
+  /** @type {number|undefined} */
   let contentStart
+  /** @type {number|undefined} */
   let contentEnd
+  /** @type {number|undefined} */
   let cellStart
 
-  while (++index < length) {
+  while (++index < events.length) {
     token = events[index][1]
 
     if (inRow) {
@@ -52,6 +75,7 @@ function resolveTable(events, context) {
       ) {
         content = {
           type: 'tableContent',
+          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
           start: events[contentStart][1].start,
           end: events[contentEnd][1].end
         }
@@ -63,15 +87,17 @@ function resolveTable(events, context) {
         }
 
         events.splice(
+          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
           contentStart,
+          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
           contentEnd - contentStart + 1,
           ['enter', content, context],
           ['enter', text, context],
           ['exit', text, context],
           ['exit', content, context]
         )
+        // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
         index -= contentEnd - contentStart - 3
-        length = events.length
         contentStart = undefined
         contentEnd = undefined
       }
@@ -102,7 +128,6 @@ function resolveTable(events, context) {
       ])
       events.splice(cellStart, 0, ['enter', cell, context])
       index += 2
-      length = events.length
       cellStart = index + 1
     }
 
@@ -130,15 +155,21 @@ function resolveTable(events, context) {
   return events
 }
 
+/** @type {Tokenizer} */
 function tokenizeTable(effects, ok, nok) {
+  /** @type {Align[]} */
   const align = []
   let tableHeaderCount = 0
+  /** @type {boolean|undefined} */
   let seenDelimiter
+  /** @type {boolean|undefined} */
   let hasDash
 
   return start
 
+  /** @type {State} */
   function start(code) {
+    // @ts-expect-error Custom.
     effects.enter('table')._align = align
     effects.enter('tableHead')
     effects.enter('tableRow')
@@ -154,6 +185,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentHead(code)
   }
 
+  /** @type {State} */
   function cellDividerHead(code) {
     // Always a pipe.
     effects.enter('tableCellDivider')
@@ -163,6 +195,7 @@ function tokenizeTable(effects, ok, nok) {
     return cellBreakHead
   }
 
+  /** @type {State} */
   function cellBreakHead(code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return atRowEndHead(code)
@@ -188,6 +221,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentHead(code)
   }
 
+  /** @type {State} */
   function inWhitespaceHead(code) {
     if (markdownSpace(code)) {
       effects.consume(code)
@@ -198,6 +232,7 @@ function tokenizeTable(effects, ok, nok) {
     return cellBreakHead(code)
   }
 
+  /** @type {State} */
   function inCellContentHead(code) {
     // EOF, whitespace, pipe
     if (
@@ -215,6 +250,7 @@ function tokenizeTable(effects, ok, nok) {
       : inCellContentHead
   }
 
+  /** @type {State} */
   function inCellContentEscapeHead(code) {
     if (code === codes.backslash || code === codes.verticalBar) {
       effects.consume(code)
@@ -225,6 +261,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentHead(code)
   }
 
+  /** @type {State} */
   function atRowEndHead(code) {
     if (code === codes.eof) {
       return nok(code)
@@ -247,6 +284,7 @@ function tokenizeTable(effects, ok, nok) {
     )
   }
 
+  /** @type {State} */
   function rowStartDelimiter(code) {
     // If there’s another space, or we’re at the EOL/EOF, exit.
     if (code === codes.eof || markdownLineEndingOrSpace(code)) {
@@ -257,6 +295,7 @@ function tokenizeTable(effects, ok, nok) {
     return atDelimiterRowBreak(code)
   }
 
+  /** @type {State} */
   function atDelimiterRowBreak(code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return rowEndDelimiter(code)
@@ -295,6 +334,7 @@ function tokenizeTable(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function inWhitespaceDelimiter(code) {
     if (markdownSpace(code)) {
       effects.consume(code)
@@ -305,6 +345,7 @@ function tokenizeTable(effects, ok, nok) {
     return atDelimiterRowBreak(code)
   }
 
+  /** @type {State} */
   function inFillerDelimiter(code) {
     if (code === codes.dash) {
       effects.consume(code)
@@ -327,6 +368,7 @@ function tokenizeTable(effects, ok, nok) {
     return atDelimiterRowBreak(code)
   }
 
+  /** @type {State} */
   function afterLeftAlignment(code) {
     if (code === codes.dash) {
       effects.enter('tableDelimiterFiller')
@@ -339,6 +381,7 @@ function tokenizeTable(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function afterRightAlignment(code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return rowEndDelimiter(code)
@@ -361,6 +404,7 @@ function tokenizeTable(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function rowEndDelimiter(code) {
     effects.exit('tableDelimiterRow')
 
@@ -377,11 +421,13 @@ function tokenizeTable(effects, ok, nok) {
     return effects.check(nextPrefixedOrBlank, tableClose, tableContinue)(code)
   }
 
+  /** @type {State} */
   function tableClose(code) {
     effects.exit('table')
     return ok(code)
   }
 
+  /** @type {State} */
   function tableContinue(code) {
     // Always a line ending.
     effects.enter('lineEnding')
@@ -392,11 +438,13 @@ function tokenizeTable(effects, ok, nok) {
     return factorySpace(effects, bodyStart, 'linePrefix', constants.tabSize)
   }
 
+  /** @type {State} */
   function bodyStart(code) {
     effects.enter('tableBody')
     return rowStartBody(code)
   }
 
+  /** @type {State} */
   function rowStartBody(code) {
     effects.enter('tableRow')
 
@@ -410,6 +458,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentBody(code)
   }
 
+  /** @type {State} */
   function cellDividerBody(code) {
     // Always a pipe.
     effects.enter('tableCellDivider')
@@ -418,6 +467,7 @@ function tokenizeTable(effects, ok, nok) {
     return cellBreakBody
   }
 
+  /** @type {State} */
   function cellBreakBody(code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return atRowEndBody(code)
@@ -439,6 +489,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentBody(code)
   }
 
+  /** @type {State} */
   function inWhitespaceBody(code) {
     if (markdownSpace(code)) {
       effects.consume(code)
@@ -449,6 +500,7 @@ function tokenizeTable(effects, ok, nok) {
     return cellBreakBody(code)
   }
 
+  /** @type {State} */
   function inCellContentBody(code) {
     // EOF, whitespace, pipe
     if (
@@ -466,6 +518,7 @@ function tokenizeTable(effects, ok, nok) {
       : inCellContentBody
   }
 
+  /** @type {State} */
   function inCellContentEscapeBody(code) {
     if (code === codes.backslash || code === codes.verticalBar) {
       effects.consume(code)
@@ -476,6 +529,7 @@ function tokenizeTable(effects, ok, nok) {
     return inCellContentBody(code)
   }
 
+  /** @type {State} */
   function atRowEndBody(code) {
     effects.exit('tableRow')
 
@@ -490,11 +544,13 @@ function tokenizeTable(effects, ok, nok) {
     )(code)
   }
 
+  /** @type {State} */
   function tableBodyClose(code) {
     effects.exit('tableBody')
     return tableClose(code)
   }
 
+  /** @type {State} */
   function tableBodyContinue(code) {
     // Always a line ending.
     effects.enter('lineEnding')
@@ -508,9 +564,11 @@ function tokenizeTable(effects, ok, nok) {
 // Based on micromark, but that won’t work as we’re in a table, and that expects
 // content.
 // <https://github.com/micromark/micromark/blob/main/lib/tokenize/setext-underline.js>
+/** @type {Tokenizer} */
 function tokenizeSetextUnderlineMini(effects, ok, nok) {
   return start
 
+  /** @type {State} */
   function start(code) {
     if (code !== codes.dash) {
       return nok(code)
@@ -520,6 +578,7 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
     return sequence(code)
   }
 
+  /** @type {State} */
   function sequence(code) {
     if (code === codes.dash) {
       effects.consume(code)
@@ -529,6 +588,7 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
     return whitespace(code)
   }
 
+  /** @type {State} */
   function whitespace(code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return ok(code)
@@ -543,11 +603,13 @@ function tokenizeSetextUnderlineMini(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeNextPrefixedOrBlank(effects, ok, nok) {
   let size = 0
 
   return start
 
+  /** @type {State} */
   function start(code) {
     // This is a check, so we don’t care about tokens, but we open a bogus one
     // so we’re valid.
@@ -557,6 +619,7 @@ function tokenizeNextPrefixedOrBlank(effects, ok, nok) {
     return whitespace
   }
 
+  /** @type {State} */
   function whitespace(code) {
     if (code === codes.virtualSpace || code === codes.space) {
       effects.consume(code)
