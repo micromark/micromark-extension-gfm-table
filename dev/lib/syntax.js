@@ -10,6 +10,7 @@
  * @typedef {'left'|'center'|'right'|null} Align
  */
 
+import assert from 'assert'
 import {factorySpace} from 'micromark-factory-space'
 import {
   markdownLineEnding,
@@ -18,6 +19,7 @@ import {
 } from 'micromark-util-character'
 import {codes} from 'micromark-util-symbol/codes.js'
 import {constants} from 'micromark-util-symbol/constants.js'
+import {types} from 'micromark-util-symbol/types.js'
 
 /** @type {Extension} */
 export const gfmTable = {
@@ -80,10 +82,11 @@ function resolveTable(events, context) {
           end: events[contentEnd][1].end
         }
         text = {
-          type: 'chunkText',
+          type: types.chunkText,
           start: content.start,
           end: content.end,
-          contentType: 'text'
+          // @ts-expect-error It’s fine.
+          contentType: constants.contentTypeText
         }
 
         events.splice(
@@ -110,7 +113,7 @@ function resolveTable(events, context) {
       (token.type === 'tableCellDivider' ||
         (token.type === 'tableRow' &&
           (cellStart + 3 < index ||
-            events[cellStart][1].type !== 'whitespace')))
+            events[cellStart][1].type !== types.whitespace)))
     ) {
       cell = {
         type: inDelimiterRow
@@ -182,12 +185,13 @@ function tokenizeTable(effects, ok, nok) {
     tableHeaderCount++
     effects.enter('temporaryTableCellContent')
     // Can’t be space or eols at the start of a construct, so we’re in a cell.
+    assert(!markdownLineEndingOrSpace(code), 'expected non-space')
     return inCellContentHead(code)
   }
 
   /** @type {State} */
   function cellDividerHead(code) {
-    // Always a pipe.
+    assert(code === codes.verticalBar, 'expected `|`')
     effects.enter('tableCellDivider')
     effects.consume(code)
     effects.exit('tableCellDivider')
@@ -202,7 +206,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     if (markdownSpace(code)) {
-      effects.enter('whitespace')
+      effects.enter(types.whitespace)
       effects.consume(code)
       return inWhitespaceHead
     }
@@ -228,7 +232,7 @@ function tokenizeTable(effects, ok, nok) {
       return inWhitespaceHead
     }
 
-    effects.exit('whitespace')
+    effects.exit(types.whitespace)
     return cellBreakHead(code)
   }
 
@@ -267,6 +271,7 @@ function tokenizeTable(effects, ok, nok) {
       return nok(code)
     }
 
+    assert(markdownLineEnding(code), 'expected eol')
     effects.exit('tableRow')
     effects.exit('tableHead')
 
@@ -302,7 +307,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     if (markdownSpace(code)) {
-      effects.enter('whitespace')
+      effects.enter(types.whitespace)
       effects.consume(code)
       return inWhitespaceDelimiter
     }
@@ -341,7 +346,7 @@ function tokenizeTable(effects, ok, nok) {
       return inWhitespaceDelimiter
     }
 
-    effects.exit('whitespace')
+    effects.exit(types.whitespace)
     return atDelimiterRowBreak(code)
   }
 
@@ -388,7 +393,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     if (markdownSpace(code)) {
-      effects.enter('whitespace')
+      effects.enter(types.whitespace)
       effects.consume(code)
       return inWhitespaceDelimiter
     }
@@ -460,7 +465,7 @@ function tokenizeTable(effects, ok, nok) {
 
   /** @type {State} */
   function cellDividerBody(code) {
-    // Always a pipe.
+    assert(code === codes.verticalBar, 'expected `|`')
     effects.enter('tableCellDivider')
     effects.consume(code)
     effects.exit('tableCellDivider')
@@ -474,7 +479,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     if (markdownSpace(code)) {
-      effects.enter('whitespace')
+      effects.enter(types.whitespace)
       effects.consume(code)
       return inWhitespaceBody
     }
@@ -496,7 +501,7 @@ function tokenizeTable(effects, ok, nok) {
       return inWhitespaceBody
     }
 
-    effects.exit('whitespace')
+    effects.exit(types.whitespace)
     return cellBreakBody(code)
   }
 
