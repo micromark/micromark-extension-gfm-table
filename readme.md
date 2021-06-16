@@ -36,8 +36,8 @@ import {micromark} from 'micromark'
 import {gfmTable, gfmTableHtml} from 'micromark-extension-gfm-table'
 
 const output = micromark('| a |\n| - |', {
-  extensions: [gfmAutolinkLiteral],
-  htmlExtensions: [gfmAutolinkLiteralHtml]
+  extensions: [gfmTable],
+  htmlExtensions: [gfmTableHtml]
 })
 
 console.log(output)

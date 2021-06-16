@@ -120,5 +120,85 @@ test('markdown -> html (micromark)', (t) => {
     'should support rows w/ trailing whitespace (4)'
   )
 
+  t.deepEqual(
+    micromark('| a |\n| - |\n- b', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li>b</li>\n</ul>',
+    'should support a list after a table'
+  )
+
+  t.deepEqual(
+    micromark('> | a |\n| - |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<p>| a |\n| - |</p>\n</blockquote>',
+    'should not support a lazy delimiter row (1)'
+  )
+
+  t.deepEqual(
+    micromark('> a\n> | b |\n| - |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<p>a\n| b |\n| - |</p>\n</blockquote>',
+    'should not support a lazy delimiter row (2)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n> | - |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>| a |</p>\n<blockquote>\n<p>| - |</p>\n</blockquote>',
+    'should not support a lazy delimiter row (3)'
+  )
+
+  t.deepEqual(
+    micromark('> a\n> | b |\n|-', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<p>a\n| b |\n|-</p>\n</blockquote>',
+    'should not support a lazy delimiter row (4)'
+  )
+
+  t.deepEqual(
+    micromark('> | a |\n> | - |\n| b |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n</blockquote>\n<p>| b |</p>',
+    'should not support a lazy body row (1)'
+  )
+
+  t.deepEqual(
+    micromark('> a\n> | b |\n> | - |\n| c |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<p>a</p>\n<table>\n<thead>\n<tr>\n<th>b</th>\n</tr>\n</thead>\n</table>\n</blockquote>\n<p>| c |</p>',
+    'should not support a lazy body row (2)'
+  )
+
+  t.deepEqual(
+    micromark('> | A |\n> | - |\n> | 1 |\n| 2 |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<blockquote>\n<table>\n<thead>\n<tr>\n<th>A</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1</td>\n</tr>\n</tbody>\n</table>\n</blockquote>\n<p>| 2 |</p>',
+    'should not support a lazy body row (3)'
+  )
+
+  const doc = '   - d\n    - e'
+
+  t.deepEqual(
+    micromark(doc, {extensions: [syntax], htmlExtensions: [html]}),
+    micromark(doc),
+    'should not change how lists and lazyness work'
+  )
+
   t.end()
 })

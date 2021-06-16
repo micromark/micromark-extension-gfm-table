@@ -23,9 +23,7 @@ import {types} from 'micromark-util-symbol/types.js'
 
 /** @type {Extension} */
 export const gfmTable = {
-  flow: {
-    null: {tokenize: tokenizeTable, resolve: resolveTable, interruptible: true}
-  }
+  flow: {null: {tokenize: tokenizeTable, resolve: resolveTable}}
 }
 
 const setextUnderlineMini = {
@@ -160,6 +158,7 @@ function resolveTable(events, context) {
 
 /** @type {Tokenizer} */
 function tokenizeTable(effects, ok, nok) {
+  const self = this
   /** @type {Align[]} */
   const align = []
   let tableHeaderCount = 0
@@ -274,19 +273,27 @@ function tokenizeTable(effects, ok, nok) {
     assert(markdownLineEnding(code), 'expected eol')
     effects.exit('tableRow')
     effects.exit('tableHead')
+    return effects.attempt(
+      {tokenize: tokenizeRowEnd, partial: true},
+      atDelimiterLineStart,
+      nok
+    )(code)
+  }
 
-    // Always a line ending.
-    effects.enter('lineEnding')
-    effects.consume(code)
-    effects.exit('lineEnding')
-
-    // If a setext heading, exit.
+  /** @type {State} */
+  function atDelimiterLineStart(code) {
+    // To do: is the lazy setext thing still needed?
     return effects.check(
       setextUnderlineMini,
       nok,
       // Support an indent before the delimiter row.
-      factorySpace(effects, rowStartDelimiter, 'linePrefix', constants.tabSize)
-    )
+      factorySpace(
+        effects,
+        rowStartDelimiter,
+        types.linePrefix,
+        constants.tabSize
+      )
+    )(code)
   }
 
   /** @type {State} */
@@ -423,24 +430,22 @@ function tokenizeTable(effects, ok, nok) {
       return tableClose(code)
     }
 
-    return effects.check(nextPrefixedOrBlank, tableClose, tableContinue)(code)
+    assert(markdownLineEnding(code), 'expected eol')
+    return effects.check(
+      nextPrefixedOrBlank,
+      tableClose,
+      effects.attempt(
+        {tokenize: tokenizeRowEnd, partial: true},
+        factorySpace(effects, bodyStart, types.linePrefix, constants.tabSize),
+        tableClose
+      )
+    )(code)
   }
 
   /** @type {State} */
   function tableClose(code) {
     effects.exit('table')
     return ok(code)
-  }
-
-  /** @type {State} */
-  function tableContinue(code) {
-    // Always a line ending.
-    effects.enter('lineEnding')
-    effects.consume(code)
-    effects.exit('lineEnding')
-    // We checked that it’s not a prefixed or blank line, so we’re certain a
-    // body is coming, though it may be indented.
-    return factorySpace(effects, bodyStart, 'linePrefix', constants.tabSize)
   }
 
   /** @type {State} */
@@ -545,7 +550,16 @@ function tokenizeTable(effects, ok, nok) {
     return effects.check(
       nextPrefixedOrBlank,
       tableBodyClose,
-      tableBodyContinue
+      effects.attempt(
+        {tokenize: tokenizeRowEnd, partial: true},
+        factorySpace(
+          effects,
+          rowStartBody,
+          types.linePrefix,
+          constants.tabSize
+        ),
+        tableBodyClose
+      )
     )(code)
   }
 
@@ -555,14 +569,23 @@ function tokenizeTable(effects, ok, nok) {
     return tableClose(code)
   }
 
-  /** @type {State} */
-  function tableBodyContinue(code) {
-    // Always a line ending.
-    effects.enter('lineEnding')
-    effects.consume(code)
-    effects.exit('lineEnding')
-    // Support an optional prefix, then start a body row.
-    return factorySpace(effects, rowStartBody, 'linePrefix', constants.tabSize)
+  /** @type {Tokenizer} */
+  function tokenizeRowEnd(effects, ok, nok) {
+    return start
+
+    /** @type {State} */
+    function start(code) {
+      assert(markdownLineEnding(code), 'expected eol')
+      effects.enter(types.lineEnding)
+      effects.consume(code)
+      effects.exit(types.lineEnding)
+      return lineStart
+    }
+
+    /** @type {State} */
+    function lineStart(code) {
+      return self.parser.lazy[self.now().line] ? nok(code) : ok(code)
+    }
   }
 }
 
