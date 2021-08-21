@@ -10,7 +10,7 @@
  * @typedef {'left'|'center'|'right'|null} Align
  */
 
-import assert from 'assert'
+import assert from 'node:assert'
 import {factorySpace} from 'micromark-factory-space'
 import {
   markdownLineEnding,
