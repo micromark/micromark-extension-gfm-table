@@ -38,20 +38,12 @@ const nextPrefixedOrBlank = {
 /** @type {Resolver} */
 function resolveTable(events, context) {
   let index = -1
-  /** @type {Token} */
-  let token
   /** @type {boolean|undefined} */
   let inHead
   /** @type {boolean|undefined} */
   let inDelimiterRow
   /** @type {boolean|undefined} */
   let inRow
-  /** @type {Token} */
-  let cell
-  /** @type {Token} */
-  let content
-  /** @type {Token} */
-  let text
   /** @type {number|undefined} */
   let contentStart
   /** @type {number|undefined} */
@@ -60,7 +52,7 @@ function resolveTable(events, context) {
   let cellStart
 
   while (++index < events.length) {
-    token = events[index][1]
+    const token = events[index][1]
 
     if (inRow) {
       if (token.type === 'temporaryTableCellContent') {
@@ -73,13 +65,17 @@ function resolveTable(events, context) {
         (token.type === 'tableCellDivider' || token.type === 'tableRow') &&
         contentEnd
       ) {
-        content = {
+        assert(
+          contentStart,
+          'expected `contentStart` to be defined if `contentEnd` is'
+        )
+        const content = {
           type: 'tableContent',
-          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
           start: events[contentStart][1].start,
           end: events[contentEnd][1].end
         }
-        text = {
+        /** @type {Token} */
+        const text = {
           type: types.chunkText,
           start: content.start,
           end: content.end,
@@ -87,17 +83,20 @@ function resolveTable(events, context) {
           contentType: constants.contentTypeText
         }
 
-        events.splice(
-          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
+        assert(
           contentStart,
-          // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
+          'expected `contentStart` to be defined if `contentEnd` is'
+        )
+
+        events.splice(
+          contentStart,
           contentEnd - contentStart + 1,
           ['enter', content, context],
           ['enter', text, context],
           ['exit', text, context],
           ['exit', content, context]
         )
-        // @ts-expect-error `contentStart` is defined if `contentEnd` is too.
+
         index -= contentEnd - contentStart - 3
         contentStart = undefined
         contentEnd = undefined
@@ -113,7 +112,7 @@ function resolveTable(events, context) {
           (cellStart + 3 < index ||
             events[cellStart][1].type !== types.whitespace)))
     ) {
-      cell = {
+      const cell = {
         type: inDelimiterRow
           ? 'tableDelimiter'
           : inHead
@@ -282,7 +281,6 @@ function tokenizeTable(effects, ok, nok) {
 
   /** @type {State} */
   function atDelimiterLineStart(code) {
-    // To do: is the lazy setext thing still needed?
     return effects.check(
       setextUnderlineMini,
       nok,
