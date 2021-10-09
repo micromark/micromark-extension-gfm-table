@@ -10,7 +10,7 @@
  * @typedef {'left'|'center'|'right'|null} Align
  */
 
-import assert from 'power-assert'
+import {ok as assert} from 'uvu/assert'
 import {factorySpace} from 'micromark-factory-space'
 import {
   markdownLineEnding,
