@@ -50,6 +50,8 @@ function resolveTable(events, context) {
   let contentEnd
   /** @type {number|undefined} */
   let cellStart
+  /** @type {boolean|undefined} */
+  let seenCellInRow
 
   while (++index < events.length) {
     const token = events[index][1]
@@ -105,8 +107,8 @@ function resolveTable(events, context) {
 
     if (
       events[index][0] === 'exit' &&
-      cellStart &&
-      cellStart + 1 < index &&
+      cellStart !== undefined &&
+      cellStart + (seenCellInRow ? 0 : 1) < index &&
       (token.type === 'tableCellDivider' ||
         (token.type === 'tableRow' &&
           (cellStart + 3 < index ||
@@ -129,6 +131,7 @@ function resolveTable(events, context) {
       events.splice(cellStart, 0, ['enter', cell, context])
       index += 2
       cellStart = index + 1
+      seenCellInRow = true
     }
 
     if (token.type === 'tableRow') {
@@ -136,6 +139,7 @@ function resolveTable(events, context) {
 
       if (inRow) {
         cellStart = index + 1
+        seenCellInRow = false
       }
     }
 
@@ -144,6 +148,7 @@ function resolveTable(events, context) {
 
       if (inDelimiterRow) {
         cellStart = index + 1
+        seenCellInRow = false
       }
     }
 

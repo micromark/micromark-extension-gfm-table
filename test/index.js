@@ -121,6 +121,60 @@ test('markdown -> html (micromark)', (t) => {
   )
 
   t.deepEqual(
+    micromark('||a|\n|-|-|', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th></th>\n<th>a</th>\n</tr>\n</thead>\n</table>',
+    'should support empty first header cells'
+  )
+
+  t.deepEqual(
+    micromark('|a||\n|-|-|', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n<th></th>\n</tr>\n</thead>\n</table>',
+    'should support empty last header cells'
+  )
+
+  t.deepEqual(
+    micromark('a||b\n-|-|-', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n<th></th>\n<th>b</th>\n</tr>\n</thead>\n</table>',
+    'should support empty header cells'
+  )
+
+  t.deepEqual(
+    micromark('|a|b|\n|-|-|\n||c|', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td></td>\n<td>c</td>\n</tr>\n</tbody>\n</table>',
+    'should support empty first body cells'
+  )
+
+  t.deepEqual(
+    micromark('|a|b|\n|-|-|\n|c||', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>c</td>\n<td></td>\n</tr>\n</tbody>\n</table>',
+    'should support empty last body cells'
+  )
+
+  t.deepEqual(
+    micromark('a|b|c\n-|-|-\nd||e', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n<th>c</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>d</td>\n<td></td>\n<td>e</td>\n</tr>\n</tbody>\n</table>',
+    'should support empty body cells'
+  )
+
+  t.deepEqual(
     micromark('| a |\n| - |\n- b', {
       extensions: [syntax],
       htmlExtensions: [html]
