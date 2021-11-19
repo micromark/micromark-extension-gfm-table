@@ -26,10 +26,6 @@ export const gfmTable = {
   flow: {null: {tokenize: tokenizeTable, resolve: resolveTable}}
 }
 
-const setextUnderlineMini = {
-  tokenize: tokenizeSetextUnderlineMini,
-  partial: true
-}
 const nextPrefixedOrBlank = {
   tokenize: tokenizeNextPrefixedOrBlank,
   partial: true
@@ -277,37 +273,20 @@ function tokenizeTable(effects, ok, nok) {
     assert(markdownLineEnding(code), 'expected eol')
     effects.exit('tableRow')
     effects.exit('tableHead')
+    const originalInterrupt = self.interrupt
+    self.interrupt = true
     return effects.attempt(
       {tokenize: tokenizeRowEnd, partial: true},
-      atDelimiterLineStart,
-      nok
+      function (code) {
+        self.interrupt = originalInterrupt
+        effects.enter('tableDelimiterRow')
+        return atDelimiterRowBreak(code)
+      },
+      function (code) {
+        self.interrupt = originalInterrupt
+        return nok(code)
+      }
     )(code)
-  }
-
-  /** @type {State} */
-  function atDelimiterLineStart(code) {
-    return effects.check(
-      setextUnderlineMini,
-      nok,
-      // Support an indent before the delimiter row.
-      factorySpace(
-        effects,
-        rowStartDelimiter,
-        types.linePrefix,
-        constants.tabSize
-      )
-    )(code)
-  }
-
-  /** @type {State} */
-  function rowStartDelimiter(code) {
-    // If there’s another space, or we’re at the EOL/EOF, exit.
-    if (code === codes.eof || markdownLineEndingOrSpace(code)) {
-      return nok(code)
-    }
-
-    effects.enter('tableDelimiterRow')
-    return atDelimiterRowBreak(code)
   }
 
   /** @type {State} */
@@ -582,55 +561,46 @@ function tokenizeTable(effects, ok, nok) {
       effects.enter(types.lineEnding)
       effects.consume(code)
       effects.exit(types.lineEnding)
-      return lineStart
+      return factorySpace(effects, prefixed, types.linePrefix)
     }
 
     /** @type {State} */
-    function lineStart(code) {
-      return self.parser.lazy[self.now().line] ? nok(code) : ok(code)
+    function prefixed(code) {
+      // Blank or interrupting line.
+      if (
+        self.parser.lazy[self.now().line] ||
+        code === codes.eof ||
+        markdownLineEnding(code)
+      ) {
+        return nok(code)
+      }
+
+      const tail = self.events[self.events.length - 1]
+
+      // Indented code can interrupt delimiter and body rows.
+      if (
+        !self.parser.constructs.disable.null.includes('codeIndented') &&
+        tail &&
+        tail[1].type === types.linePrefix &&
+        tail[2].sliceSerialize(tail[1], true).length >= constants.tabSize
+      ) {
+        return nok(code)
+      }
+
+      self._gfmTableDynamicInterruptHack = true
+
+      return effects.check(
+        self.parser.constructs.flow,
+        function (code) {
+          self._gfmTableDynamicInterruptHack = false
+          return nok(code)
+        },
+        function (code) {
+          self._gfmTableDynamicInterruptHack = false
+          return ok(code)
+        }
+      )(code)
     }
-  }
-}
-
-// Based on micromark, but that won’t work as we’re in a table, and that expects
-// content.
-// <https://github.com/micromark/micromark/blob/main/lib/tokenize/setext-underline.js>
-/** @type {Tokenizer} */
-function tokenizeSetextUnderlineMini(effects, ok, nok) {
-  return start
-
-  /** @type {State} */
-  function start(code) {
-    if (code !== codes.dash) {
-      return nok(code)
-    }
-
-    effects.enter('setextUnderline')
-    return sequence(code)
-  }
-
-  /** @type {State} */
-  function sequence(code) {
-    if (code === codes.dash) {
-      effects.consume(code)
-      return sequence
-    }
-
-    return whitespace(code)
-  }
-
-  /** @type {State} */
-  function whitespace(code) {
-    if (code === codes.eof || markdownLineEnding(code)) {
-      return ok(code)
-    }
-
-    if (markdownSpace(code)) {
-      effects.consume(code)
-      return whitespace
-    }
-
-    return nok(code)
   }
 }
 

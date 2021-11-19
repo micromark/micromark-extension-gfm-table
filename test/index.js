@@ -254,5 +254,144 @@ test('markdown -> html (micromark)', (t) => {
     'should not change how lists and lazyness work'
   )
 
+  t.deepEqual(
+    micromark('| a |\n   | - |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
+    'should form a table if the delimiter row is indented w/ 3 spaces'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n    | - |', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>| a |\n| - |</p>',
+    'should not form a table if the delimiter row is indented w/ 4 spaces'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n    | - |', {
+      extensions: [syntax, {disable: {null: ['codeIndented']}}],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
+    'should form a table if the delimiter row is indented w/ 4 spaces and indented code is turned off'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n> block quote?', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<blockquote>\n<p>block quote?</p>\n</blockquote>',
+    'should be interrupted by a block quote'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n>', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<blockquote>\n</blockquote>',
+    'should be interrupted by a block quote (empty)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n- list?', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li>list?</li>\n</ul>',
+    'should be interrupted by a list'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n-', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li></li>\n</ul>',
+    'should be interrupted by a list (empty)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n<!-- HTML? -->', {
+      allowDangerousHtml: true,
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<!-- HTML? -->',
+    'should be interrupted by HTML (flow)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n\tcode?', {
+      allowDangerousHtml: true,
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<pre><code>code?\n</code></pre>',
+    'should be interrupted by code (indented)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n```js\ncode?', {
+      allowDangerousHtml: true,
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<pre><code class="language-js">code?\n</code></pre>\n',
+    'should be interrupted by code (fenced)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n***', {
+      allowDangerousHtml: true,
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<hr />',
+    'should be interrupted by a thematic break'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\n# heading?', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<h1>heading?</h1>',
+    'should be interrupted by a heading (ATX)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\nheading\n=', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n<tr>\n<td>=</td>\n</tr>\n</tbody>\n</table>',
+    'should *not* be interrupted by a heading (setext)'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\nheading\n---', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<hr />',
+    'should *not* be interrupted by a heading (setext), but interrupt if the underline is also a thematic break'
+  )
+
+  t.deepEqual(
+    micromark('| a |\n| - |\nheading\n-', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<ul>\n<li></li>\n</ul>',
+    'should *not* be interrupted by a heading (setext), but interrupt if the underline is also an empty list item bullet'
+  )
+
   t.end()
 })
