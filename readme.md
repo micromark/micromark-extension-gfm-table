@@ -8,25 +8,64 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub flavored markdown (GFM)
-[tables][].
-This syntax extension matches the GFM spec and github.com.
+**[micromark][]** extension to support GitHub Flavored Markdown (GFM) tables.
+
+## Contents
+
+*   [What is this?](#what-is-this)
+*   [When to use this](#when-to-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`gfmTable`](#gfmtable)
+    *   [`gfmTableHtml`](#gfmtablehtml)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Security](#security)
+*   [Related](#related)
+*   [Contribute](#contribute)
+*   [License](#license)
+
+## What is this?
+
+This package is a micromark extension to add support for GFM tables.
+It matches how tables work on `github.com`.
 
 ## When to use this
 
-You should probably use [`micromark-extension-gfm`][micromark-extension-gfm]
-instead, which combines this package with other GFM features.
-Alternatively, if you don’t want all of GFM, use this package.
+In many cases, when working with micromark, you’d want to use
+[`micromark-extension-gfm`][micromark-extension-gfm] instead, which combines
+this package with other GFM features.
+
+When working with syntax trees, you’d want to combine this package with
+[`mdast-util-gfm-table`][mdast-util-gfm-table] (or
+[`mdast-util-gfm`][mdast-util-gfm] when using `micromark-extension-gfm`).
+
+These tools are all rather low-level.
+In most cases, you’d instead want to use [`remark-gfm`][remark-gfm] with
+[remark][].
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 
 ```sh
 npm install micromark-extension-gfm-table
+```
+
+In Deno with [Skypack][]:
+
+```js
+import {gfmTable, gfmTableHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-table@1?dts'
+```
+
+In browsers with [Skypack][]:
+
+```html
+<script type="module">
+  import {gfmTable, gfmTableHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-table@1?min'
+</script>
 ```
 
 ## Use
@@ -67,30 +106,35 @@ Without this condition, production code is loaded.
 
 ### `gfmTable`
 
+An extension for micromark to parse GFM tables (can be passed in `extensions`).
+
 ### `gfmTableHtml`
 
-An extension for micromark to parse tables (can be passed in
-`extensions`) and one to compile to `<table>` elements (can be passed in
-`htmlExtensions`).
+An extension to compile them to HTML (can be passed in `htmlExtensions`).
+
+## Types
+
+This package is fully typed with [TypeScript][].
+There are no additional exported types.
+
+## Compatibility
+
+This package is at least compatible with all maintained versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
+It also works in Deno and modern browsers.
+
+## Security
+
+This package is safe.
 
 ## Related
 
-*   [`remarkjs/remark`][remark]
-    — markdown processor powered by plugins
-*   [`remarkjs/remark-gfm`](https://github.com/remarkjs/remark-gfm)
-    — remark plugin using this and other GFM features
-*   [`micromark/micromark`][micromark]
-    — the smallest commonmark-compliant markdown parser that exists
-*   [`micromark/micromark-extension-gfm`][micromark-extension-gfm]
-    — micromark extension combining this with other GFM features
-*   [`syntax-tree/mdast-util-gfm-table`](https://github.com/syntax-tree/mdast-util-gfm-table)
-    — mdast utility to support tables
-*   [`syntax-tree/mdast-util-gfm`](https://github.com/syntax-tree/mdast-util-gfm)
-    — mdast utility to support GFM
-*   [`syntax-tree/mdast-util-from-markdown`][from-markdown]
-    — mdast parser using `micromark` to create mdast from markdown
-*   [`syntax-tree/mdast-util-to-markdown`][to-markdown]
-    — mdast serializer to create markdown from mdast
+*   [`syntax-tree/mdast-util-gfm-table`][mdast-util-gfm-table]
+    — support GFM tables in mdast
+*   [`syntax-tree/mdast-util-gfm`][mdast-util-gfm]
+    — support GFM in mdast
+*   [`remarkjs/remark-gfm`][remark-gfm]
+    — support GFM in remark
 
 ## Contribute
 
@@ -136,24 +180,30 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[skypack]: https://www.skypack.dev
+
 [license]: license
 
 [author]: https://wooorm.com
 
-[contributing]: https://github.com/micromark/.github/blob/HEAD/contributing.md
+[contributing]: https://github.com/micromark/.github/blob/main/contributing.md
 
-[support]: https://github.com/micromark/.github/blob/HEAD/support.md
+[support]: https://github.com/micromark/.github/blob/main/support.md
 
-[coc]: https://github.com/micromark/.github/blob/HEAD/code-of-conduct.md
+[coc]: https://github.com/micromark/.github/blob/main/code-of-conduct.md
+
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+[typescript]: https://www.typescriptlang.org
 
 [micromark]: https://github.com/micromark/micromark
 
-[from-markdown]: https://github.com/syntax-tree/mdast-util-from-markdown
-
-[to-markdown]: https://github.com/syntax-tree/mdast-util-to-markdown
-
 [remark]: https://github.com/remarkjs/remark
 
-[tables]: https://github.github.com/gfm/#tables-extension-
-
 [micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
+
+[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
+
+[mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
+
+[remark-gfm]: https://github.com/remarkjs/remark-gfm
