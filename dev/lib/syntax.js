@@ -7,7 +7,7 @@
  */
 
 /**
- * @typedef {'left'|'center'|'right'|null} Align
+ * @typedef {'left'|'center'|'right'|'none'} Align
  */
 
 import {ok as assert} from 'uvu/assert'
@@ -159,7 +159,7 @@ function resolveTable(events, context) {
 /** @type {Tokenizer} */
 function tokenizeTable(effects, ok, nok) {
   const self = this
-  /** @type {Align[]} */
+  /** @type {Array<Align>} */
   const align = []
   let tableHeaderCount = 0
   /** @type {boolean|undefined} */
@@ -305,7 +305,7 @@ function tokenizeTable(effects, ok, nok) {
       effects.enter('tableDelimiterFiller')
       effects.consume(code)
       hasDash = true
-      align.push(null)
+      align.push('none')
       return inFillerDelimiter
     }
 

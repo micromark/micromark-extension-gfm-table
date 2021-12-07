@@ -1,13 +1,10 @@
 /**
  * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
- */
-
-/**
  * @typedef {import('./syntax.js').Align} Align
  */
 
 const alignment = {
-  null: '',
+  none: '',
   left: ' align="left"',
   right: ' align="right"',
   center: ' align="center"'
@@ -17,10 +14,12 @@ const alignment = {
 export const gfmTableHtml = {
   enter: {
     table(token) {
+      /** @type {Array<Align>} */
+      // @ts-expect-error Custom.
+      const tableAlign = token._align
       this.lineEndingIfNeeded()
       this.tag('<table>')
-      // @ts-expect-error Custom.
-      this.setData('tableAlign', token._align)
+      this.setData('tableAlign', tableAlign)
     },
     tableBody() {
       // Clear slurping line ending from the delimiter row.
@@ -28,10 +27,11 @@ export const gfmTableHtml = {
       this.tag('<tbody>')
     },
     tableData() {
-      /** @type {string|undefined} */
-      const align =
-        // @ts-expect-error Custom.
-        alignment[this.getData('tableAlign')[this.getData('tableColumn')]]
+      const tableAlign = /** @type {Array<Align>} */ (
+        this.getData('tableAlign')
+      )
+      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const align = alignment[tableAlign[tableColumn]]
 
       if (align === undefined) {
         // Capture results to ignore them.
@@ -46,13 +46,14 @@ export const gfmTableHtml = {
       this.tag('<thead>')
     },
     tableHeader() {
-      this.lineEndingIfNeeded()
-      this.tag(
-        '<th' +
-          // @ts-expect-error Custom.
-          alignment[this.getData('tableAlign')[this.getData('tableColumn')]] +
-          '>'
+      const tableAlign = /** @type {Array<Align>} */ (
+        this.getData('tableAlign')
       )
+      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const align = alignment[tableAlign[tableColumn]]
+
+      this.lineEndingIfNeeded()
+      this.tag('<th' + align + '>')
     },
     tableRow() {
       this.setData('tableColumn', 0)
@@ -85,14 +86,14 @@ export const gfmTableHtml = {
       this.tag('</tbody>')
     },
     tableData() {
-      /** @type {number} */
-      // @ts-expect-error Custom.
-      const column = this.getData('tableColumn')
+      const tableAlign = /** @type {Array<Align>} */ (
+        this.getData('tableAlign')
+      )
+      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
 
-      // @ts-expect-error Custom.
-      if (column in this.getData('tableAlign')) {
+      if (tableColumn in tableAlign) {
         this.tag('</td>')
-        this.setData('tableColumn', column + 1)
+        this.setData('tableColumn', tableColumn + 1)
       } else {
         // Stop capturing.
         this.resume()
@@ -105,26 +106,23 @@ export const gfmTableHtml = {
       // Slurp the line ending from the delimiter row.
     },
     tableHeader() {
+      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
       this.tag('</th>')
-      // @ts-expect-error Custom.
-      this.setData('tableColumn', this.getData('tableColumn') + 1)
+      this.setData('tableColumn', tableColumn + 1)
     },
     tableRow() {
-      /** @type {Align[]} */
-      // @ts-expect-error Custom.
-      const align = this.getData('tableAlign')
-      /** @type {number} */
-      // @ts-expect-error Custom.
-      let column = this.getData('tableColumn')
+      const tableAlign = /** @type {Array<Align>} */ (
+        this.getData('tableAlign')
+      )
+      let tableColumn = /** @type {number} */ (this.getData('tableColumn'))
 
-      while (column < align.length) {
+      while (tableColumn < tableAlign.length) {
         this.lineEndingIfNeeded()
-        // @ts-expect-error `null` is fine as an index.
-        this.tag('<td' + alignment[align[column]] + '></td>')
-        column++
+        this.tag('<td' + alignment[tableAlign[tableColumn]] + '></td>')
+        tableColumn++
       }
 
-      this.setData('tableColumn', column)
+      this.setData('tableColumn', tableColumn)
       this.lineEndingIfNeeded()
       this.tag('</tr>')
     }
