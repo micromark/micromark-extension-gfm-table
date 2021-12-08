@@ -1,23 +1,12 @@
+import {URL} from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 import test from 'tape'
 import {micromark} from 'micromark'
+import {createGfmFixtures} from 'create-gfm-fixtures'
 import {gfmTable as syntax, gfmTableHtml as html} from '../dev/index.js'
 
-const input = fs.readFileSync(path.join('test', 'input.md'))
-const output = fs.readFileSync(path.join('test', 'output.html'), 'utf8')
-
 test('markdown -> html (micromark)', (t) => {
-  t.deepEqual(
-    micromark(input, {
-      allowDangerousHtml: true,
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    output,
-    'should support tables just like how GH does it'
-  )
-
   t.deepEqual(
     micromark('| a |', {
       extensions: [syntax],
@@ -392,6 +381,41 @@ test('markdown -> html (micromark)', (t) => {
     '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<ul>\n<li></li>\n</ul>',
     'should *not* be interrupted by a heading (setext), but interrupt if the underline is also an empty list item bullet'
   )
+
+  t.end()
+})
+
+test('fixtures', async (t) => {
+  const base = new URL('fixtures/', import.meta.url)
+
+  await createGfmFixtures(base, {rehypeStringify: {closeSelfClosing: true}})
+
+  const files = fs.readdirSync(base).filter((d) => /\.md$/.test(d))
+  let index = -1
+
+  while (++index < files.length) {
+    const name = path.basename(files[index], '.md')
+    const input = fs.readFileSync(new URL(name + '.md', base))
+    let expected = String(fs.readFileSync(new URL(name + '.html', base)))
+    let actual = micromark(input, {
+      allowDangerousHtml: true,
+      allowDangerousProtocol: true,
+      extensions: [syntax],
+      htmlExtensions: [html]
+    })
+
+    if (actual && !/\n$/.test(actual)) {
+      actual += '\n'
+    }
+
+    if (name === 'some-escapes') {
+      expected = expected
+        .replace(/C \| Charlie/, 'C \\')
+        .replace(/E \\\| Echo/, 'E \\\\')
+    }
+
+    t.deepEqual(actual, expected, name)
+  }
 
   t.end()
 })

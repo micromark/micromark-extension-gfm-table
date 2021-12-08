@@ -8,7 +8,8 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub Flavored Markdown (GFM) tables.
+**[micromark][]** extension to support GitHub flavored markdown (GFM)
+[tables][].
 
 ## Contents
 
@@ -207,3 +208,5 @@ abide by its terms.
 [mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
 
 [remark-gfm]: https://github.com/remarkjs/remark-gfm
+
+[tables]: https://github.github.com/gfm/#tables-extension-
