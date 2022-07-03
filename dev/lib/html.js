@@ -10,7 +10,11 @@ const alignment = {
   center: ' align="center"'
 }
 
-/** @type {HtmlExtension} */
+/**
+ * HTML extension for micromark (passed in `htmlExtensions`).
+ *
+ * @type {HtmlExtension}
+ */
 export const gfmTableHtml = {
   enter: {
     table(token) {
