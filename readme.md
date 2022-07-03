@@ -8,8 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub flavored markdown (GFM)
-[tables][].
+[micromark][] extension to support GFM [tables][].
 
 ## Contents
 
@@ -20,6 +19,10 @@
 *   [API](#api)
     *   [`gfmTable`](#gfmtable)
     *   [`gfmTableHtml`](#gfmtablehtml)
+*   [Authoring](#authoring)
+*   [HTML](#html)
+*   [CSS](#css)
+*   [Syntax](#syntax)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Security](#security)
@@ -29,27 +32,27 @@
 
 ## What is this?
 
-This package is a micromark extension to add support for GFM tables.
+This package contains extensions that add support for tables enabled by
+GFM to [`micromark`][micromark].
 It matches how tables work on `github.com`.
 
 ## When to use this
 
-In many cases, when working with micromark, you’d want to use
-[`micromark-extension-gfm`][micromark-extension-gfm] instead, which combines
-this package with other GFM features.
+These tools are all low-level.
+In many cases, you want to use [`remark-gfm`][plugin] with remark instead.
 
-When working with syntax trees, you’d want to combine this package with
-[`mdast-util-gfm-table`][mdast-util-gfm-table] (or
-[`mdast-util-gfm`][mdast-util-gfm] when using `micromark-extension-gfm`).
+Even when you want to use `micromark`, you likely want to use
+[`micromark-extension-gfm`][micromark-extension-gfm] to support all GFM
+features.
+That extension includes this extension.
 
-These tools are all rather low-level.
-In most cases, you’d instead want to use [`remark-gfm`][remark-gfm] with
-[remark][].
+When working with `mdast-util-from-markdown`, you must combine this package with
+[`mdast-util-gfm-table`][util].
 
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
+In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
 
 ```sh
 npm install micromark-extension-gfm-table
@@ -97,21 +100,180 @@ Yields:
 
 ## API
 
-This package exports the following identifiers: `gfmTable`, `gfmTableHtml`.
+This package exports the identifiers `gfmTable` and `gfmTableHtml`.
 There is no default export.
 
-The export map supports the endorsed
-[`development` condition](https://nodejs.org/api/packages.html#packages_resolving_user_conditions).
+The export map supports the endorsed [`development` condition][condition].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
 ### `gfmTable`
 
-An extension for micromark to parse GFM tables (can be passed in `extensions`).
+Syntax extension for micromark (passed in `extensions`).
 
 ### `gfmTableHtml`
 
-An extension to compile them to HTML (can be passed in `htmlExtensions`).
+HTML extension for micromark (passed in `htmlExtensions`).
+
+## Authoring
+
+###### Align
+
+When authoring markdown with tables, it can get a bit hard to make them look
+well.
+You can align the pipes (`|`) in rows nicely, which makes it easier to spot
+problems, but aligning gets cumbersome for tables with many rows or columns,
+or when they change frequently, especially if data in cells have varying
+lengths.
+To illustrate, when some cell increases in size which makes it longer than all
+other cells in that column, you’d have to pad every other cell as well, which
+can be a lot of work, and will introduce a giant diff in Git.
+
+###### Initial and final pipes
+
+In some cases, GFM tables can be written without initial or final pipes:
+
+```markdown
+name  | letter
+----- | ------
+alpha | a
+bravo | b
+```
+
+These tables do not parse in certain other cases, making them fragile and hard
+to get right.
+Due to this, it’s recommended to always include initial and final pipes.
+
+###### Escaped pipes in code
+
+GitHub applies one weird, special thing in tables that markdown otherwise never
+does: it allows character escapes (not character references) of pipes (not other
+characters) in code in cells.
+It’s weird, because markdown, per CommonMark, does not allow character escapes
+in code.
+GitHub only applies this change in code in tables:
+
+```markdown
+| `a\|b\-` |
+| - |
+
+`a\|b\-`
+```
+
+Yields:
+
+```html
+<table>
+<thead>
+<tr>
+<th><code>a|b\-</code></th>
+</tr>
+</thead>
+</table>
+<p><code>a\|b\-</code></p>
+```
+
+> 👉 **Note**: observe that the escaped pipe in the table does not result in
+> another column, and is not present in the resulting code.
+> Other escapes, and pipe escapes outside tables, do nothing.
+
+This behavior solves a real problem, so you might resort to using it.
+It might not work in other markdown parsers though.
+
+## HTML
+
+GFM tables relate to several tabular data HTML elements:
+See [*§ 4.9.1 The `table` element*][html-table],
+[*§ 4.9.5 The `tbody` element*][html-tbody],
+[*§ 4.9.6 The `thead` element*][html-thead],
+[*§ 4.9.8 The `tr` element*][html-tr],
+[*§ 4.9.9 The `td` element*][html-td], and
+[*§ 4.9.10 The `th` element*][html-th]
+in the HTML spec for more info.
+
+GitHub provides the alignment information from the delimiter row on each `<td>`
+and `<th>` element with an `align` attribute.
+This feature stems from ancient times in HTML, and still works, but is
+considered a [non-conforming feature][html-non-conform], which must not be used
+by authors.
+
+## CSS
+
+The following CSS is needed to make tables look a bit like GitHub.
+For the complete actual CSS see
+[`sindresorhus/github-markdown-css`][github-markdown-css]
+
+```css
+/* Light theme. */
+:root {
+  --color-canvas-default: #ffffff;
+  --color-canvas-subtle: #f6f8fa;
+  --color-border-default: #d0d7de;
+  --color-border-muted: hsla(210, 18%, 87%, 1);
+}
+
+/* Dark theme. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas-default: #0d1117;
+    --color-canvas-subtle: #161b22;
+    --color-border-default: #30363d;
+    --color-border-muted: #21262d;
+  }
+}
+
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  margin-top: 0;
+  margin-bottom: 16px;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+}
+
+tr {
+  background-color: var(--color-canvas-default);
+  border-top: 1px solid var(--color-border-muted);
+}
+
+tr:nth-child(2n) {
+  background-color: var(--color-canvas-subtle);
+}
+
+td,
+th {
+  padding: 6px 13px;
+  border: 1px solid var(--color-border-default);
+}
+
+th {
+  font-weight: 600;
+}
+
+table img {
+  background-color: transparent;
+}
+```
+
+## Syntax
+
+Tables form with, roughly, the following BNF:
+
+```bnf
+; Restriction: number of cells in first row must match number of cells in delimiter row.
+table ::= row eol delimiter_row 0.*( eol row )
+
+; Restriction: Line cannot be blank.
+row ::= [ '|' ] cell 0.*( '|' cell ) [ '|' ]
+delimiter_row ::= [ '|' ] delimiter_cell 0.*( '|' delimiter_cell ) [ '|' ]
+
+cell ::= 0.*space_or_tab 0.*( cell_text | cell_escape ) 0.*space_or_tab
+cell_text ::= code - eol - '|' - '\\' - ''
+cell_escape ::= '\\' ( '|' | '\\' )
+delimiter_cell ::= 0.*space_or_tab [ ':' ] 1*'-' [ ':' ] 0.*space_or_tab
+```
 
 ## Types
 
@@ -121,7 +283,7 @@ There are no additional exported types.
 ## Compatibility
 
 This package is at least compatible with all maintained versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
+As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
 It also works in Deno and modern browsers.
 
 ## Security
@@ -130,11 +292,11 @@ This package is safe.
 
 ## Related
 
-*   [`syntax-tree/mdast-util-gfm-table`][mdast-util-gfm-table]
+*   [`syntax-tree/mdast-util-gfm-table`][util]
     — support GFM tables in mdast
 *   [`syntax-tree/mdast-util-gfm`][mdast-util-gfm]
     — support GFM in mdast
-*   [`remarkjs/remark-gfm`][remark-gfm]
+*   [`remarkjs/remark-gfm`][plugin]
     — support GFM in remark
 
 ## Contribute
@@ -197,16 +359,32 @@ abide by its terms.
 
 [typescript]: https://www.typescriptlang.org
 
-[micromark]: https://github.com/micromark/micromark
+[condition]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
 
-[remark]: https://github.com/remarkjs/remark
+[micromark]: https://github.com/micromark/micromark
 
 [micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
 
-[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
+[util]: https://github.com/syntax-tree/mdast-util-gfm-table
 
 [mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
 
-[remark-gfm]: https://github.com/remarkjs/remark-gfm
+[plugin]: https://github.com/remarkjs/remark-gfm
 
 [tables]: https://github.github.com/gfm/#tables-extension-
+
+[html-table]: https://html.spec.whatwg.org/multipage/tables.html#the-table-element
+
+[html-tbody]: https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element
+
+[html-thead]: https://html.spec.whatwg.org/multipage/tables.html#the-thead-element
+
+[html-tr]: https://html.spec.whatwg.org/multipage/tables.html#the-tr-element
+
+[html-td]: https://html.spec.whatwg.org/multipage/tables.html#the-td-element
+
+[html-th]: https://html.spec.whatwg.org/multipage/tables.html#the-th-element
+
+[html-non-conform]: https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+
+[github-markdown-css]: https://github.com/sindresorhus/github-markdown-css
