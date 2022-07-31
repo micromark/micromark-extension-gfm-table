@@ -414,6 +414,22 @@ test('fixtures', async (t) => {
         .replace(/E \\\| Echo/, 'E \\\\')
     }
 
+    if (name === 'interrupt') {
+      actual = actual
+        // Comments, declarations, instructions, cdata are filtered out by GitHub.
+        .replace(/<!-- c -->/, '')
+        .replace(/<!C>/, '')
+        .replace(/<\? c \?>/, '')
+        .replace(/<!\[CDATA\[c]]>/, '')
+        // Unknown elements are filtered out by GitHub.
+        .replace(/<x>/, '')
+        // `micromark` removes the first line ending (maybe a bug?)
+        .replace(/<pre>\n {2}a/, '<pre>  a')
+
+      // GitHub parses the document and adds the missing closing tag.
+      actual += '</div>\n'
+    }
+
     t.deepEqual(actual, expected, name)
   }
 
