@@ -25,7 +25,8 @@ import {types} from 'micromark-util-symbol/types.js'
 // To do: next major: expose functions.
 
 /**
- * Syntax extension for micromark (passed in `extensions`).
+ * Extension for `micromark` that can be passed in `extensions` to enable GFM
+ * table syntax.
  *
  * @type {Extension}
  */

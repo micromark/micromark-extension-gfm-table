@@ -16,7 +16,8 @@ const alignment = {
 // To do: next major: expose functions.
 
 /**
- * HTML extension for micromark (passed in `htmlExtensions`).
+ * Extension for `micromark` that can be passed in `htmlExtensions` to support
+ * GFM tables when serializing to HTML.
  *
  * @type {HtmlExtension}
  */
