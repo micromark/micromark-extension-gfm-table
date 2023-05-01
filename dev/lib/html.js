@@ -1,5 +1,8 @@
 /**
  * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
+ */
+
+/**
  * @typedef {import('./syntax.js').Align} Align
  */
 
@@ -9,6 +12,8 @@ const alignment = {
   right: ' align="right"',
   center: ' align="center"'
 }
+
+// To do: next major: expose functions.
 
 /**
  * HTML extension for micromark (passed in `htmlExtensions`).

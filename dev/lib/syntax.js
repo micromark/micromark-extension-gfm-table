@@ -1,14 +1,14 @@
 /**
  * @typedef {import('micromark-util-types').Extension} Extension
  * @typedef {import('micromark-util-types').Resolver} Resolver
- * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
- * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
  * @typedef {import('micromark-util-types').State} State
  * @typedef {import('micromark-util-types').Token} Token
+ * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
+ * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
  */
 
 /**
- * @typedef {'left'|'center'|'right'|'none'} Align
+ * @typedef {'left' | 'center' | 'right' | 'none'} Align
  */
 
 import {ok as assert} from 'uvu/assert'
@@ -21,6 +21,8 @@ import {
 import {codes} from 'micromark-util-symbol/codes.js'
 import {constants} from 'micromark-util-symbol/constants.js'
 import {types} from 'micromark-util-symbol/types.js'
+
+// To do: next major: expose functions.
 
 /**
  * Syntax extension for micromark (passed in `extensions`).
