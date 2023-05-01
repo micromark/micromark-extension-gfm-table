@@ -1,13 +1,13 @@
-import {URL} from 'node:url'
+import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
-import test from 'tape'
+import test from 'node:test'
 import {micromark} from 'micromark'
 import {createGfmFixtures} from 'create-gfm-fixtures'
 import {gfmTable as syntax, gfmTableHtml as html} from '../dev/index.js'
 
-test('markdown -> html (micromark)', (t) => {
-  t.deepEqual(
+test('markdown -> html (micromark)', () => {
+  assert.deepEqual(
     micromark('| a |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -16,7 +16,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a table w/ the head row ending in an eof (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -25,7 +25,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a table w/ the head row ending in an eof (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('a |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -34,7 +34,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a table w/ the head row ending in an eof (3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -43,7 +43,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a table w/ a delimiter row ending in an eof (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a\n| -', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -52,7 +52,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a table w/ a delimiter row ending in an eof (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n| b |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -61,7 +61,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a table w/ a body row ending in an eof (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a\n| -\n| b', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -70,7 +70,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a table w/ a body row ending in an eof (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('a|b\n-|-\nc|d', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -79,7 +79,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a table w/ a body row ending in an eof (3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a  \n| -\t\n| b |     ', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -88,19 +88,19 @@ test('markdown -> html (micromark)', (t) => {
     'should support rows w/ trailing whitespace (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a | \n| - |', {extensions: [syntax], htmlExtensions: [html]}),
     '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
     'should support rows w/ trailing whitespace (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - | ', {extensions: [syntax], htmlExtensions: [html]}),
     '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>',
     'should support rows w/ trailing whitespace (3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n| b | ', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -109,7 +109,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support rows w/ trailing whitespace (4)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('||a|\n|-|-|', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -118,7 +118,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty first header cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('|a||\n|-|-|', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -127,7 +127,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty last header cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('a||b\n-|-|-', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -136,7 +136,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty header cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('|a|b|\n|-|-|\n||c|', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -145,7 +145,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty first body cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('|a|b|\n|-|-|\n|c||', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -154,7 +154,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty last body cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('a|b|c\n-|-|-\nd||e', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -163,7 +163,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support empty body cells'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n- b', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -172,7 +172,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a list after a table'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> | a |\n| - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -181,7 +181,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy delimiter row (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> a\n> | b |\n| - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -190,7 +190,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy delimiter row (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n> | - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -199,7 +199,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy delimiter row (3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> a\n> | b |\n|-', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -208,7 +208,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy delimiter row (4)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> | a |\n> | - |\n| b |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -217,7 +217,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy body row (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> a\n> | b |\n> | - |\n| c |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -226,7 +226,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not support a lazy body row (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('> | A |\n> | - |\n> | 1 |\n| 2 |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -237,13 +237,13 @@ test('markdown -> html (micromark)', (t) => {
 
   const doc = '   - d\n    - e'
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark(doc, {extensions: [syntax], htmlExtensions: [html]}),
     micromark(doc),
     'should not change how lists and lazyness work'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n   | - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -252,7 +252,7 @@ test('markdown -> html (micromark)', (t) => {
     'should form a table if the delimiter row is indented w/ 3 spaces'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n    | - |', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -261,7 +261,7 @@ test('markdown -> html (micromark)', (t) => {
     'should not form a table if the delimiter row is indented w/ 4 spaces'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n    | - |', {
       extensions: [syntax, {disable: {null: ['codeIndented']}}],
       htmlExtensions: [html]
@@ -270,7 +270,7 @@ test('markdown -> html (micromark)', (t) => {
     'should form a table if the delimiter row is indented w/ 4 spaces and indented code is turned off'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n> block quote?', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -279,7 +279,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a block quote'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n>', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -288,7 +288,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a block quote (empty)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n- list?', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -297,7 +297,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a list'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n-', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -306,7 +306,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a list (empty)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n<!-- HTML? -->', {
       allowDangerousHtml: true,
       extensions: [syntax],
@@ -316,7 +316,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by HTML (flow)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n\tcode?', {
       allowDangerousHtml: true,
       extensions: [syntax],
@@ -326,7 +326,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by code (indented)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n```js\ncode?', {
       allowDangerousHtml: true,
       extensions: [syntax],
@@ -336,7 +336,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by code (fenced)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n***', {
       allowDangerousHtml: true,
       extensions: [syntax],
@@ -346,7 +346,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a thematic break'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\n# heading?', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -355,7 +355,7 @@ test('markdown -> html (micromark)', (t) => {
     'should be interrupted by a heading (ATX)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\nheading\n=', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -364,7 +364,7 @@ test('markdown -> html (micromark)', (t) => {
     'should *not* be interrupted by a heading (setext)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\nheading\n---', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -373,7 +373,7 @@ test('markdown -> html (micromark)', (t) => {
     'should *not* be interrupted by a heading (setext), but interrupt if the underline is also a thematic break'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('| a |\n| - |\nheading\n-', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -381,11 +381,9 @@ test('markdown -> html (micromark)', (t) => {
     '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<ul>\n<li></li>\n</ul>',
     'should *not* be interrupted by a heading (setext), but interrupt if the underline is also an empty list item bullet'
   )
-
-  t.end()
 })
 
-test('fixtures', async (t) => {
+test('fixtures', async () => {
   const base = new URL('fixtures/', import.meta.url)
 
   await createGfmFixtures(base, {rehypeStringify: {closeSelfClosing: true}})
@@ -430,8 +428,6 @@ test('fixtures', async (t) => {
       actual += '</div>\n'
     }
 
-    t.deepEqual(actual, expected, name)
+    assert.deepEqual(actual, expected, name)
   }
-
-  t.end()
 })
