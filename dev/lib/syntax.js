@@ -176,10 +176,23 @@ function tokenizeTable(effects, ok, nok) {
 
   /** @type {State} */
   function start(code) {
+    const { containerState } = self;
+    const prevRowCount = containerState.rowCount ?? 0;
+    const hasDelimiterRow = containerState.hasDelimiterRow ?? false;
+
     // @ts-expect-error Custom.
     effects.enter('table')._align = align
     effects.enter('tableHead')
     effects.enter('tableRow')
+
+    // increment row count
+    const crrRowCount = prevRowCount + 1;
+    containerState.rowCount = crrRowCount;
+
+    // Max 2 rows processing before delimiter row
+    if (hasDelimiterRow || crrRowCount > 2) {
+      return nok(code);
+    }
 
     // If we start with a pipe, we open a cell marker.
     if (code === codes.verticalBar) {
@@ -272,7 +285,7 @@ function tokenizeTable(effects, ok, nok) {
   /** @type {State} */
   function atRowEndHead(code) {
     if (code === codes.eof) {
-      return nok(code)
+      return tableExit(code)
     }
 
     assert(markdownLineEnding(code), 'expected eol')
@@ -289,13 +302,16 @@ function tokenizeTable(effects, ok, nok) {
       },
       function (code) {
         self.interrupt = originalInterrupt
-        return nok(code)
+        return tableExit(code)
       }
     )(code)
   }
 
   /** @type {State} */
   function atDelimiterRowBreak(code) {
+    // persist that the table has a delimiter row
+    self.containerState.hasDelimiterRow = true;
+
     if (code === codes.eof || markdownLineEnding(code)) {
       return rowEndDelimiter(code)
     }
@@ -330,7 +346,7 @@ function tokenizeTable(effects, ok, nok) {
       return atDelimiterRowBreak
     }
 
-    return nok(code)
+    return tableExit(code)
   }
 
   /** @type {State} */
@@ -377,7 +393,7 @@ function tokenizeTable(effects, ok, nok) {
     }
 
     // Anything else is not ok.
-    return nok(code)
+    return tableExit(code)
   }
 
   /** @type {State} */
@@ -400,7 +416,7 @@ function tokenizeTable(effects, ok, nok) {
       return atDelimiterRowBreak
     }
 
-    return nok(code)
+    return tableExit(code)
   }
 
   /** @type {State} */
@@ -410,7 +426,7 @@ function tokenizeTable(effects, ok, nok) {
     // Exit if there was no dash at all, or if the header cell count is not the
     // delimiter cell count.
     if (!hasDash || tableHeaderCount !== align.length) {
-      return nok(code)
+      return tableExit(code)
     }
 
     if (code === codes.eof) {
@@ -430,8 +446,22 @@ function tokenizeTable(effects, ok, nok) {
   }
 
   /** @type {State} */
+  function tableExit(code) {
+    // delete persisted states
+    delete self.containerState.rowCount;
+    delete self.containerState.hasDelimiterRow;
+
+    return nok(code);
+  }
+
+  /** @type {State} */
   function tableClose(code) {
     effects.exit('table')
+
+    // delete persisted states
+    delete self.containerState.rowCount;
+    delete self.containerState.hasDelimiterRow;
+
     return ok(code)
   }
 
