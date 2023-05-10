@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {import('./syntax.js').Align} Align
+ * @typedef {import('./infer.js').Align} Align
  */
 
 const alignment = {
@@ -14,6 +14,7 @@ const alignment = {
 }
 
 // To do: next major: expose functions.
+// To do: next major: use `infer` here, when all events are exposed.
 
 /**
  * Extension for `micromark` that can be passed in `htmlExtensions` to support
@@ -32,8 +33,6 @@ export const gfmTableHtml = {
       this.setData('tableAlign', tableAlign)
     },
     tableBody() {
-      // Clear slurping line ending from the delimiter row.
-      this.setData('slurpOneLineEnding')
       this.tag('<tbody>')
     },
     tableData() {
@@ -85,8 +84,9 @@ export const gfmTableHtml = {
     },
     table() {
       this.setData('tableAlign')
-      // If there was no table body, make sure the slurping from the delimiter row
-      // is cleared.
+      // Note: we don’t set `slurpAllLineEndings` anymore, in delimiter rows,
+      // but we do need to reset it to match a funky newline GH generates for
+      // list items combined with tables.
       this.setData('slurpAllLineEndings')
       this.lineEndingIfNeeded()
       this.tag('</table>')
@@ -112,8 +112,6 @@ export const gfmTableHtml = {
     tableHead() {
       this.lineEndingIfNeeded()
       this.tag('</thead>')
-      this.setData('slurpOneLineEnding', true)
-      // Slurp the line ending from the delimiter row.
     },
     tableHeader() {
       const tableColumn = /** @type {number} */ (this.getData('tableColumn'))

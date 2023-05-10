@@ -80,6 +80,7 @@
   "xo": {
     "prettier": true,
     "rules": {
+      "max-depth": "off",
       "n/file-extension-in-import": "off",
       "unicorn/no-this-assignment": "off"
     },

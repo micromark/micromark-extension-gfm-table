@@ -414,6 +414,7 @@ test('fixtures', async () => {
     }
 
     const name = d.slice(0, -extname.length)
+
     const input = await fs.readFile(new URL(name + '.md', base))
     let expected = String(await fs.readFile(new URL(name + '.html', base)))
     let actual = micromark(input, {
