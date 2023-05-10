@@ -8,7 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[micromark][] extension to support GFM [tables][].
+[micromark][] extensions to support GFM [tables][].
 
 ## Contents
 
@@ -19,6 +19,7 @@
 *   [API](#api)
     *   [`gfmTable`](#gfmtable)
     *   [`gfmTableHtml`](#gfmtablehtml)
+*   [Bugs](#bugs)
 *   [Authoring](#authoring)
 *   [HTML](#html)
 *   [CSS](#css)
@@ -32,27 +33,28 @@
 
 ## What is this?
 
-This package contains extensions that add support for tables enabled by
-GFM to [`micromark`][micromark].
-It matches how tables work on `github.com`.
+This package contains extensions that add support for the table syntax enabled
+by GFM to [`micromark`][micromark].
+These extensions match github.com.
 
 ## When to use this
 
-These tools are all low-level.
-In many cases, you want to use [`remark-gfm`][plugin] with remark instead.
+This project is useful when you want to support tables in markdown.
 
-Even when you want to use `micromark`, you likely want to use
-[`micromark-extension-gfm`][micromark-extension-gfm] to support all GFM
-features.
-That extension includes this extension.
+You can use these extensions when you are working with [`micromark`][micromark].
+To support all GFM features, use
+[`micromark-extension-gfm`][micromark-extension-gfm] instead.
 
-When working with `mdast-util-from-markdown`, you must combine this package with
-[`mdast-util-gfm-table`][util].
+When you need a syntax tree, combine this package with
+[`mdast-util-gfm-table`][mdast-util-gfm-table].
+
+All these packages are used in [`remark-gfm`][remark-gfm], which focusses on
+making it easier to transform content by abstracting these internals away.
 
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install micromark-extension-gfm-table
@@ -100,102 +102,86 @@ Yields:
 
 ## API
 
-This package exports the identifiers `gfmTable` and `gfmTableHtml`.
+This package exports the identifiers [`gfmTable`][api-gfm-table] and
+[`gfmTableHtml`][api-gfm-table-html].
 There is no default export.
 
-The export map supports the endorsed [`development` condition][condition].
+The export map supports the [`development` condition][development].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
 ### `gfmTable`
 
-Syntax extension for micromark (passed in `extensions`).
+Extension for `micromark` that can be passed in `extensions` to enable GFM
+table syntax ([`Extension`][micromark-extension]).
 
 ### `gfmTableHtml`
 
-HTML extension for micromark (passed in `htmlExtensions`).
+Extension for `micromark` that can be passed in `htmlExtensions` to support
+GFM tables when serializing to HTML
+([`HtmlExtension`][micromark-html-extension]).
+
+## Bugs
+
+GitHub’s own algorithm to parse tables contains a bug.
+This bug is not present in this project.
+The issue relating to tables is:
+
+*   [GFM tables: escaped escapes are incorrectly treated as
+    escapes](https://github.com/github/cmark-gfm/issues/277)
 
 ## Authoring
 
-###### Align
+When authoring markdown with GFM tables, it’s recommended to *always* put
+pipes around cells.
+Without them, it can be hard to infer whether the table will work, how many
+columns there are, and which column you are currently editing.
 
-When authoring markdown with tables, it can get a bit hard to make them look
-well.
-You can align the pipes (`|`) in rows nicely, which makes it easier to spot
-problems, but aligning gets cumbersome for tables with many rows or columns,
-or when they change frequently, especially if data in cells have varying
-lengths.
-To illustrate, when some cell increases in size which makes it longer than all
-other cells in that column, you’d have to pad every other cell as well, which
-can be a lot of work, and will introduce a giant diff in Git.
+It is recommended to not use many columns, as it results in very long lines,
+making it hard to infer which column you are currently editing.
 
-###### Initial and final pipes
+For larger tables, particularly when cells vary in size, it is recommended
+*not* to manually “pad” cell text.
+While it can look better, it results in a lot of time spent realigning
+everything when a new, longer cell is added or the longest cell removed, as
+every row then must be changed.
+Other than costing time, it also causes large diffs in Git.
 
-In some cases, GFM tables can be written without initial or final pipes:
-
-```markdown
-name  | letter
------ | ------
-alpha | a
-bravo | b
-```
-
-These tables do not parse in certain other cases, making them fragile and hard
-to get right.
-Due to this, it’s recommended to always include initial and final pipes.
-
-###### Escaped pipes in code
-
-GitHub applies one weird, special thing in tables that markdown otherwise never
-does: it allows character escapes (not character references) of pipes (not other
-characters) in code in cells.
-It’s weird, because markdown, per CommonMark, does not allow character escapes
-in code.
-GitHub only applies this change in code in tables:
+To illustrate, when authoring large tables, it is discouraged to pad cells
+like this:
 
 ```markdown
-| `a\|b\-` |
-| - |
-
-`a\|b\-`
+| Alpha bravo charlie |              delta |
+| ------------------- | -----------------: |
+| Echo                | Foxtrot golf hotel |
 ```
 
-Yields:
+Instead, use single spaces (and single filler dashes):
 
-```html
-<table>
-<thead>
-<tr>
-<th><code>a|b\-</code></th>
-</tr>
-</thead>
-</table>
-<p><code>a\|b\-</code></p>
+```markdown
+| Alpha bravo charlie | delta |
+| - | -: |
+| Echo | Foxtrot golf hotel |
 ```
-
-> 👉 **Note**: observe that the escaped pipe in the table does not result in
-> another column, and is not present in the resulting code.
-> Other escapes, and pipe escapes outside tables, do nothing.
-
-This behavior solves a real problem, so you might resort to using it.
-It might not work in other markdown parsers though.
 
 ## HTML
 
-GFM tables relate to several tabular data HTML elements:
-See [*§ 4.9.1 The `table` element*][html-table],
+GFM tables relate to several HTML elements: `<table>`, `<tbody>`, `<td>`,
+`<th>`, `<thead>`, and `<tr>`.
+See
+[*§ 4.9.1 The `table` element*][html-table],
 [*§ 4.9.5 The `tbody` element*][html-tbody],
-[*§ 4.9.6 The `thead` element*][html-thead],
-[*§ 4.9.8 The `tr` element*][html-tr],
-[*§ 4.9.9 The `td` element*][html-td], and
-[*§ 4.9.10 The `th` element*][html-th]
+[*§ 4.9.9 The `td` element*][html-td],
+[*§ 4.9.10 The `th` element*][html-th],
+[*§ 4.9.6 The `thead` element*][html-thead], and
+[*§ 4.9.8 The `tr` element*][html-tr]
 in the HTML spec for more info.
 
-GitHub provides the alignment information from the delimiter row on each `<td>`
-and `<th>` element with an `align` attribute.
-This feature stems from ancient times in HTML, and still works, but is
-considered a [non-conforming feature][html-non-conform], which must not be used
-by authors.
+If the alignment of a column is left, right, or center, a deprecated
+`align` attribute is added to each `<th>` and `<td>` element belonging to
+that column.
+That attribute is interpreted by browsers as if a CSS `text-align` property
+was included, with its value set to that same keyword.
 
 ## CSS
 
@@ -259,32 +245,149 @@ table img {
 
 ## Syntax
 
-Tables form with, roughly, the following BNF:
+Tables form with the following BNF:
 
 ```bnf
-; Restriction: number of cells in first row must match number of cells in delimiter row.
-table ::= row eol delimiter_row 0.*( eol row )
+gfm_table ::= gfm_table_head 0*(eol gfm_table_body_row)
 
-; Restriction: Line cannot be blank.
-row ::= [ '|' ] cell 0.*( '|' cell ) [ '|' ]
-delimiter_row ::= [ '|' ] delimiter_cell 0.*( '|' delimiter_cell ) [ '|' ]
+; Restriction: both rows must have the same number of cells.
+gfm_table_head ::= gfm_table_row eol gfm_table_delimiter_row
 
-cell ::= 0.*space_or_tab 0.*( cell_text | cell_escape ) 0.*space_or_tab
-cell_text ::= code - eol - '|' - '\\' - ''
-cell_escape ::= '\\' ( '|' | '\\' )
-delimiter_cell ::= 0.*space_or_tab [ ':' ] 1*'-' [ ':' ] 0.*space_or_tab
+gfm_table_row ::= ['|'] gfm_table_cell 0*('|' gfm_table_cell) ['|'] *space_or_tab
+gfm_table_cell ::= *space_or_tab gfm_table_text *space_or_tab
+gfm_table_text ::= 0*(line - '\\' - '|' | '\\' ['\\' | '|'])
+
+gfm_table_delimiter_row ::= ['|'] gfm_table_delimiter_cell 0*('|' gfm_table_delimiter_cell) ['|'] *space_or_tab
+gfm_table_delimiter_cell ::= *space_or_tab gfm_table_delimiter_value *space_or_tab
+gfm_table_delimiter_value ::= [':'] 1*'-' [':']
 ```
+
+As this construct occurs in flow, like all flow constructs, it must be
+followed by an eol (line ending) or eof (end of file).
+
+The above grammar shows that basically anything can be a cell or a row.
+The main thing that makes something a row, is that it occurs directly before
+or after a delimiter row, or after another row.
+
+It is not required for a table to have a body: it can end right after the
+delimiter row.
+
+Each column can be marked with an alignment.
+The alignment marker is a colon (`:`) used before and/or after delimiter row
+filler.
+To illustrate:
+
+```markdown
+| none | left | right | center |
+| ---- | :--- | ----: | :----: |
+```
+
+The number of cells in the delimiter row, is the number of columns of the
+table.
+Only the head row is required to have the same number of cells.
+Body rows are not required to have a certain number of cells.
+For body rows that have less cells than the number of columns of the table,
+empty cells are injected.
+When a row has more cells than the number of columns of the table, the
+superfluous cells are dropped.
+To illustrate:
+
+```markdown
+| a | b |
+| - | - |
+| c |
+| d | e | f |
+```
+
+Yields:
+
+```html
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c</td>
+<td></td>
+</tr>
+<tr>
+<td>d</td>
+<td>e</td>
+</tr>
+</tbody>
+</table>
+```
+
+Each cell’s text is interpreted as the [text][micromark-content-type] content
+type.
+That means that it can include constructs such as attention (emphasis, strong).
+
+The grammar for cells prohibits the use of `|` in them.
+To use pipes in cells, encode them as a character reference or character
+escape: `&vert;` (or `&VerticalLine;`, `&verbar;`, `&#124;`, `&#x7c;`) or
+`\|`.
+
+Escapes will typically work, but they are not supported in
+code (text) (and the math (text) extension).
+To work around this, GitHub came up with a rather weird “trick”.
+When inside a table cell *and* inside code, escaped pipes *are* decoded.
+To illustrate:
+
+```markdown
+| Name | Character |
+| - | - |
+| Left curly brace | `{` |
+| Pipe | `\|` |
+| Right curly brace | `}` |
+```
+
+Yields:
+
+```html
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Left curly brace</td>
+<td><code>{</code></td>
+</tr>
+<tr>
+<td>Pipe</td>
+<td><code>|</code></td>
+</tr>
+<tr>
+<td>Right curly brace</td>
+<td><code>}</code></td>
+</tr>
+</tbody>
+</table>
+```
+
+> 👉 **Note**: no other character can be escaped like this.
+> Escaping pipes in code does not work when not inside a table, either.
 
 ## Types
 
 This package is fully typed with [TypeScript][].
-There are no additional exported types.
+It exports no additional types.
 
 ## Compatibility
 
-This package is at least compatible with all maintained versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
-It also works in Deno and modern browsers.
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 16+.
+Our projects sometimes work with older versions, but this is not guaranteed.
+
+These extensions work with `micromark` version 3+.
 
 ## Security
 
@@ -292,12 +395,14 @@ This package is safe.
 
 ## Related
 
-*   [`syntax-tree/mdast-util-gfm-table`][util]
-    — support GFM tables in mdast
-*   [`syntax-tree/mdast-util-gfm`][mdast-util-gfm]
-    — support GFM in mdast
-*   [`remarkjs/remark-gfm`][plugin]
-    — support GFM in remark
+*   [`micromark-extension-gfm`][micromark-extension-gfm]
+    — support all of GFM
+*   [`mdast-util-gfm-table`][mdast-util-gfm-table]
+    — support all of GFM in mdast
+*   [`mdast-util-gfm`][mdast-util-gfm]
+    — support all of GFM in mdast
+*   [`remark-gfm`][remark-gfm]
+    — support all of GFM in remark
 
 ## Contribute
 
@@ -359,17 +464,23 @@ abide by its terms.
 
 [typescript]: https://www.typescriptlang.org
 
-[condition]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
+[development]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
 
 [micromark]: https://github.com/micromark/micromark
 
-[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
+[micromark-extension]: https://github.com/micromark/micromark#syntaxextension
 
-[util]: https://github.com/syntax-tree/mdast-util-gfm-table
+[micromark-html-extension]: https://github.com/micromark/micromark#htmlextension
+
+[micromark-content-type]: https://github.com/micromark/micromark#content-types
+
+[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
 
 [mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
 
-[plugin]: https://github.com/remarkjs/remark-gfm
+[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
+
+[remark-gfm]: https://github.com/remarkjs/remark-gfm
 
 [tables]: https://github.github.com/gfm/#tables-extension-
 
@@ -385,6 +496,8 @@ abide by its terms.
 
 [html-th]: https://html.spec.whatwg.org/multipage/tables.html#the-th-element
 
-[html-non-conform]: https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
-
 [github-markdown-css]: https://github.com/sindresorhus/github-markdown-css
+
+[api-gfm-table]: #gfmtable
+
+[api-gfm-table-html]: #gfmtablehtml
