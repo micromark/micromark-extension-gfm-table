@@ -6,6 +6,8 @@
  * @typedef {import('./infer.js').Align} Align
  */
 
+import {ok as assert} from 'uvu/assert'
+
 const alignment = {
   none: '',
   left: ' align="left"',
@@ -25,9 +27,8 @@ const alignment = {
 export const gfmTableHtml = {
   enter: {
     table(token) {
-      /** @type {Array<Align>} */
-      // @ts-expect-error Custom.
       const tableAlign = token._align
+      assert(tableAlign, 'expected `_align`')
       this.lineEndingIfNeeded()
       this.tag('<table>')
       this.setData('tableAlign', tableAlign)
@@ -36,10 +37,10 @@ export const gfmTableHtml = {
       this.tag('<tbody>')
     },
     tableData() {
-      const tableAlign = /** @type {Array<Align>} */ (
-        this.getData('tableAlign')
-      )
-      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const tableAlign = this.getData('tableAlign')
+      const tableColumn = this.getData('tableColumn')
+      assert(tableAlign, 'expected `tableAlign`')
+      assert(typeof tableColumn === 'number', 'expected `tableColumn`')
       const align = alignment[tableAlign[tableColumn]]
 
       if (align === undefined) {
@@ -55,12 +56,11 @@ export const gfmTableHtml = {
       this.tag('<thead>')
     },
     tableHeader() {
-      const tableAlign = /** @type {Array<Align>} */ (
-        this.getData('tableAlign')
-      )
-      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const tableAlign = this.getData('tableAlign')
+      const tableColumn = this.getData('tableColumn')
+      assert(tableAlign, 'expected `tableAlign`')
+      assert(typeof tableColumn === 'number', 'expected `tableColumn`')
       const align = alignment[tableAlign[tableColumn]]
-
       this.lineEndingIfNeeded()
       this.tag('<th' + align + '>')
     },
@@ -96,10 +96,10 @@ export const gfmTableHtml = {
       this.tag('</tbody>')
     },
     tableData() {
-      const tableAlign = /** @type {Array<Align>} */ (
-        this.getData('tableAlign')
-      )
-      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const tableAlign = this.getData('tableAlign')
+      const tableColumn = this.getData('tableColumn')
+      assert(tableAlign, 'expected `tableAlign`')
+      assert(typeof tableColumn === 'number', 'expected `tableColumn`')
 
       if (tableColumn in tableAlign) {
         this.tag('</td>')
@@ -114,15 +114,16 @@ export const gfmTableHtml = {
       this.tag('</thead>')
     },
     tableHeader() {
-      const tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const tableColumn = this.getData('tableColumn')
+      assert(typeof tableColumn === 'number', 'expected `tableColumn`')
       this.tag('</th>')
       this.setData('tableColumn', tableColumn + 1)
     },
     tableRow() {
-      const tableAlign = /** @type {Array<Align>} */ (
-        this.getData('tableAlign')
-      )
-      let tableColumn = /** @type {number} */ (this.getData('tableColumn'))
+      const tableAlign = this.getData('tableAlign')
+      let tableColumn = this.getData('tableColumn')
+      assert(tableAlign, 'expected `tableAlign`')
+      assert(typeof tableColumn === 'number', 'expected `tableColumn`')
 
       while (tableColumn < tableAlign.length) {
         this.lineEndingIfNeeded()

@@ -289,6 +289,7 @@ function tokenizeTable(effects, ok, nok) {
     seen = false
 
     if (markdownSpace(code)) {
+      assert(self.parser.constructs.disable.null, 'expected `disabled.null`')
       return factorySpace(
         effects,
         headDelimiterBefore,
@@ -791,7 +792,6 @@ function resolveTable(events, context) {
   while (++index < context.events.length) {
     const event = context.events[index]
     if (event[0] === 'enter' && event[1].type === 'table') {
-      // @ts-expect-error: custom field.
       event[1]._align = gfmTableAlign(context.events, index)
     }
   }
@@ -865,6 +865,7 @@ function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
   if (range[2] !== 0) {
     const relatedStart = getPoint(context.events, range[2])
     const relatedEnd = getPoint(context.events, range[3])
+    /** @type {Token} */
     const valueToken = {
       type: valueName,
       start: Object.assign({}, relatedStart),
@@ -879,7 +880,6 @@ function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
       const end = context.events[range[3]]
       start[1].end = Object.assign({}, end[1].end)
       start[1].type = types.chunkText
-      // @ts-expect-error It’s fine.
       start[1].contentType = constants.contentTypeText
 
       // Remove if needed.
