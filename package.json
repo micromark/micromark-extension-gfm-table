@@ -27,8 +27,6 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "main": "index.js",
-  "types": "index.d.ts",
   "files": [
     "dev/",
     "lib/",
@@ -111,7 +109,6 @@
     "rules": {
       "complexity": "off",
       "max-depth": "off",
-      "n/file-extension-in-import": "off",
       "unicorn/no-this-assignment": "off"
     }
   }
