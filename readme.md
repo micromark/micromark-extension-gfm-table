@@ -63,14 +63,14 @@ npm install micromark-extension-gfm-table
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {gfmTable, gfmTableHtml} from 'https://esm.sh/micromark-extension-gfm-table@1'
+import {gfmTable, gfmTableHtml} from 'https://esm.sh/micromark-extension-gfm-table@2'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {gfmTable, gfmTableHtml} from 'https://esm.sh/micromark-extension-gfm-table@1?bundle'
+  import {gfmTable, gfmTableHtml} from 'https://esm.sh/micromark-extension-gfm-table@2?bundle'
 </script>
 ```
 
