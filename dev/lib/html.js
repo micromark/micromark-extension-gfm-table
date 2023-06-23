@@ -6,7 +6,7 @@
  * @typedef {import('./infer.js').Align} Align
  */
 
-import {ok as assert} from 'uvu/assert'
+import {ok as assert} from 'devlop'
 
 const alignment = {
   none: '',

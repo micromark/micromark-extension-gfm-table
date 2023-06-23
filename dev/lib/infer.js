@@ -6,7 +6,7 @@
  * @typedef {'center' | 'left' | 'none' | 'right'} Align
  */
 
-import {ok as assert} from 'uvu/assert'
+import {ok as assert} from 'devlop'
 
 /**
  * Figure out the alignment of a GFM table.

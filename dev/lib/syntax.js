@@ -17,7 +17,7 @@
  *   Where we are: `1` for head row, `2` for delimiter row, `3` for body row.
  */
 
-import {ok as assert} from 'uvu/assert'
+import {ok as assert} from 'devlop'
 import {factorySpace} from 'micromark-factory-space'
 import {
   markdownLineEnding,
