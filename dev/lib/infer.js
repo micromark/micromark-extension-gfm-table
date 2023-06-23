@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {'left' | 'center' | 'right' | 'none'} Align
+ * @typedef {'center' | 'left' | 'none' | 'right'} Align
  */
 
 import {ok as assert} from 'uvu/assert'
@@ -11,9 +11,12 @@ import {ok as assert} from 'uvu/assert'
 /**
  * Figure out the alignment of a GFM table.
  *
- * @param {Array<Event>} events
+ * @param {Readonly<Array<Event>>} events
+ *   List of events.
  * @param {number} index
+ *   Table enter event.
  * @returns {Array<Align>}
+ *   List of aligns.
  */
 export function gfmTableAlign(events, index) {
   assert(events[index][1].type === 'table', 'expected table')

@@ -16,7 +16,7 @@ const alignment = {
 }
 
 // To do: next major: expose functions.
-// To do: next major: use `infer` here, when all events are exposed.
+// To do: micromark@5: use `infer` here, when all events are exposed.
 
 /**
  * Extension for `micromark` that can be passed in `htmlExtensions` to support

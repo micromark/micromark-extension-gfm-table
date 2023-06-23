@@ -97,10 +97,19 @@
         "rules": {
           "no-await-in-loop": 0
         }
+      },
+      {
+        "files": [
+          "**/*.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/consistent-type-definitions": 0
+        }
       }
     ],
     "prettier": true,
     "rules": {
+      "complexity": "off",
       "max-depth": "off",
       "n/file-extension-in-import": "off",
       "unicorn/no-this-assignment": "off"

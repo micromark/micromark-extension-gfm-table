@@ -627,7 +627,7 @@ function tokenizeTable(effects, ok, nok) {
 }
 
 /** @type {Resolver} */
-// eslint-disable-next-line complexity
+
 function resolveTable(events, context) {
   let index = -1
   let inFirstCellAwaitingPipe = true
@@ -799,12 +799,12 @@ function resolveTable(events, context) {
   return events
 }
 
-/// Generate a cell.
 /**
+ * Generate a cell.
  *
  * @param {EditMap} map
- * @param {TokenizeContext} context
- * @param {Range} range
+ * @param {Readonly<TokenizeContext>} context
+ * @param {Readonly<Range>} range
  * @param {RowKind} rowKind
  * @param {number | undefined} rowEnd
  * @param {Token | undefined} previousCell
@@ -912,8 +912,8 @@ function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
 /**
  * Generate table end (and table body end).
  *
- * @param {EditMap} map
- * @param {TokenizeContext} context
+ * @param {Readonly<EditMap>} map
+ * @param {Readonly<TokenizeContext>} context
  * @param {number} index
  * @param {Token} table
  * @param {Token | undefined} tableBody
@@ -936,9 +936,9 @@ function flushTableEnd(map, context, index, table, tableBody) {
 }
 
 /**
- * @param {Array<Event>} events
+ * @param {Readonly<Array<Event>>} events
  * @param {number} index
- * @returns {readonly Point}
+ * @returns {Readonly<Point>}
  */
 function getPoint(events, index) {
   const event = events[index]
