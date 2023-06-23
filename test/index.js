@@ -20,8 +20,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<p>| a |</p>'
       )
@@ -33,8 +33,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<p>| a</p>'
       )
@@ -46,8 +46,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('a |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<p>a |</p>'
       )
@@ -59,8 +59,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -72,8 +72,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a\n| -', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -85,8 +85,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\n| b |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -98,8 +98,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a\n| -\n| b', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -111,8 +111,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('a|b\n-|-\nc|d', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>c</td>\n<td>d</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -124,8 +124,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a  \n| -\t\n| b |     ', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -137,8 +137,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a | \n| - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -150,8 +150,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - | ', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -163,8 +163,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\n| b | ', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -174,8 +174,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty first header cells', async function () {
     assert.deepEqual(
       micromark('||a|\n|-|-|', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th></th>\n<th>a</th>\n</tr>\n</thead>\n</table>'
     )
@@ -184,8 +184,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty last header cells', async function () {
     assert.deepEqual(
       micromark('|a||\n|-|-|', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n<th></th>\n</tr>\n</thead>\n</table>'
     )
@@ -194,8 +194,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty header cells', async function () {
     assert.deepEqual(
       micromark('a||b\n-|-|-', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n<th></th>\n<th>b</th>\n</tr>\n</thead>\n</table>'
     )
@@ -204,8 +204,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty first body cells', async function () {
     assert.deepEqual(
       micromark('|a|b|\n|-|-|\n||c|', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td></td>\n<td>c</td>\n</tr>\n</tbody>\n</table>'
     )
@@ -214,8 +214,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty last body cells', async function () {
     assert.deepEqual(
       micromark('|a|b|\n|-|-|\n|c||', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>c</td>\n<td></td>\n</tr>\n</tbody>\n</table>'
     )
@@ -224,8 +224,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support empty body cells', async function () {
     assert.deepEqual(
       micromark('a|b|c\n-|-|-\nd||e', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n<th>c</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>d</td>\n<td></td>\n<td>e</td>\n</tr>\n</tbody>\n</table>'
     )
@@ -234,8 +234,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should support a list after a table', async function () {
     assert.deepEqual(
       micromark('| a |\n| - |\n- b', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li>b</li>\n</ul>'
     )
@@ -246,8 +246,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('> | a |\n| - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<blockquote>\n<p>| a |\n| - |</p>\n</blockquote>'
       )
@@ -259,8 +259,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('> a\n> | b |\n| - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<blockquote>\n<p>a\n| b |\n| - |</p>\n</blockquote>'
       )
@@ -272,8 +272,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n> | - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<p>| a |</p>\n<blockquote>\n<p>| - |</p>\n</blockquote>'
       )
@@ -285,8 +285,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('> a\n> | b |\n|-', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<blockquote>\n<p>a\n| b |\n|-</p>\n</blockquote>'
       )
@@ -296,8 +296,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should not support a lazy body row (1)', async function () {
     assert.deepEqual(
       micromark('> | a |\n> | - |\n| b |', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<blockquote>\n<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n</blockquote>\n<p>| b |</p>'
     )
@@ -306,8 +306,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should not support a lazy body row (2)', async function () {
     assert.deepEqual(
       micromark('> a\n> | b |\n> | - |\n| c |', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<blockquote>\n<p>a</p>\n<table>\n<thead>\n<tr>\n<th>b</th>\n</tr>\n</thead>\n</table>\n</blockquote>\n<p>| c |</p>'
     )
@@ -316,8 +316,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should not support a lazy body row (3)', async function () {
     assert.deepEqual(
       micromark('> | A |\n> | - |\n> | 1 |\n| 2 |', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<blockquote>\n<table>\n<thead>\n<tr>\n<th>A</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1</td>\n</tr>\n</tbody>\n</table>\n</blockquote>\n<p>| 2 |</p>'
     )
@@ -330,8 +330,8 @@ test('markdown -> html (micromark)', async function (t) {
 
       assert.deepEqual(
         micromark(doc, {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         micromark(doc)
       )
@@ -343,8 +343,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n   | - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -356,8 +356,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n    | - |', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<p>| a |\n| - |</p>'
       )
@@ -369,8 +369,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n    | - |', {
-          extensions: [gfmTable, {disable: {null: ['codeIndented']}}],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable(), {disable: {null: ['codeIndented']}}],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>'
       )
@@ -380,8 +380,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should be interrupted by a block quote', async function () {
     assert.deepEqual(
       micromark('| a |\n| - |\n> block quote?', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<blockquote>\n<p>block quote?</p>\n</blockquote>'
     )
@@ -392,8 +392,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\n>', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<blockquote>\n</blockquote>'
       )
@@ -403,8 +403,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should be interrupted by a list', async function () {
     assert.deepEqual(
       micromark('| a |\n| - |\n- list?', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li>list?</li>\n</ul>'
     )
@@ -413,8 +413,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should be interrupted by a list (empty)', async function () {
     assert.deepEqual(
       micromark('| a |\n| - |\n-', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<ul>\n<li></li>\n</ul>'
     )
@@ -424,8 +424,8 @@ test('markdown -> html (micromark)', async function (t) {
     assert.deepEqual(
       micromark('| a |\n| - |\n<!-- HTML? -->', {
         allowDangerousHtml: true,
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<!-- HTML? -->'
     )
@@ -435,8 +435,8 @@ test('markdown -> html (micromark)', async function (t) {
     assert.deepEqual(
       micromark('| a |\n| - |\n\tcode?', {
         allowDangerousHtml: true,
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<pre><code>code?\n</code></pre>'
     )
@@ -446,8 +446,8 @@ test('markdown -> html (micromark)', async function (t) {
     assert.deepEqual(
       micromark('| a |\n| - |\n```js\ncode?', {
         allowDangerousHtml: true,
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<pre><code class="language-js">code?\n</code></pre>\n'
     )
@@ -457,8 +457,8 @@ test('markdown -> html (micromark)', async function (t) {
     assert.deepEqual(
       micromark('| a |\n| - |\n***', {
         allowDangerousHtml: true,
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<hr />'
     )
@@ -467,8 +467,8 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test('should be interrupted by a heading (ATX)', async function () {
     assert.deepEqual(
       micromark('| a |\n| - |\n# heading?', {
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       }),
       '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n</table>\n<h1>heading?</h1>'
     )
@@ -479,8 +479,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\nheading\n=', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n<tr>\n<td>=</td>\n</tr>\n</tbody>\n</table>'
       )
@@ -492,8 +492,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\nheading\n---', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<hr />'
       )
@@ -505,8 +505,8 @@ test('markdown -> html (micromark)', async function (t) {
     async function () {
       assert.deepEqual(
         micromark('| a |\n| - |\nheading\n-', {
-          extensions: [gfmTable],
-          htmlExtensions: [gfmTableHtml]
+          extensions: [gfmTable()],
+          htmlExtensions: [gfmTableHtml()]
         }),
         '<table>\n<thead>\n<tr>\n<th>a</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>heading</td>\n</tr>\n</tbody>\n</table>\n<ul>\n<li></li>\n</ul>'
       )
@@ -539,8 +539,8 @@ test('fixtures', async function (t) {
       let actual = micromark(input, {
         allowDangerousHtml: true,
         allowDangerousProtocol: true,
-        extensions: [gfmTable],
-        htmlExtensions: [gfmTableHtml]
+        extensions: [gfmTable()],
+        htmlExtensions: [gfmTableHtml()]
       })
 
       if (actual && !/\n$/.test(actual)) {

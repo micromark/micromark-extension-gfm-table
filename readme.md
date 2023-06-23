@@ -17,8 +17,8 @@
 *   [Install](#install)
 *   [Use](#use)
 *   [API](#api)
-    *   [`gfmTable`](#gfmtable)
-    *   [`gfmTableHtml`](#gfmtablehtml)
+    *   [`gfmTable()`](#gfmtable)
+    *   [`gfmTableHtml()`](#gfmtablehtml)
 *   [Bugs](#bugs)
 *   [Authoring](#authoring)
 *   [HTML](#html)
@@ -81,8 +81,8 @@ import {micromark} from 'micromark'
 import {gfmTable, gfmTableHtml} from 'micromark-extension-gfm-table'
 
 const output = micromark('| a |\n| - |', {
-  extensions: [gfmTable],
-  htmlExtensions: [gfmTableHtml]
+  extensions: [gfmTable()],
+  htmlExtensions: [gfmTableHtml()]
 })
 
 console.log(output)
@@ -110,12 +110,21 @@ The export map supports the [`development` condition][development].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
-### `gfmTable`
+### `gfmTable()`
+
+Create an HTML extension for `micromark` to support GitHub tables syntax.
+
+###### Returns
 
 Extension for `micromark` that can be passed in `extensions` to enable GFM
 table syntax ([`Extension`][micromark-extension]).
 
-### `gfmTableHtml`
+### `gfmTableHtml()`
+
+Create an HTML extension for `micromark` to support GitHub tables when
+serializing to HTML.
+
+###### Returns
 
 Extension for `micromark` that can be passed in `htmlExtensions` to support
 GFM tables when serializing to HTML

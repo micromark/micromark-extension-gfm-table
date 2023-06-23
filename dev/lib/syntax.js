@@ -28,16 +28,17 @@ import {codes, constants, types} from 'micromark-util-symbol'
 import {EditMap} from './edit-map.js'
 import {gfmTableAlign} from './infer.js'
 
-// To do: next major: expose functions.
-
 /**
- * Extension for `micromark` that can be passed in `extensions` to enable GFM
- * table syntax.
+ * Create an HTML extension for `micromark` to support GitHub tables syntax.
  *
- * @type {Extension}
+ * @returns {Extension}
+ *   Extension for `micromark` that can be passed in `extensions` to enable GFM
+ *   table syntax.
  */
-export const gfmTable = {
-  flow: {null: {tokenize: tokenizeTable, resolveAll: resolveTable}}
+export function gfmTable() {
+  return {
+    flow: {null: {tokenize: tokenizeTable, resolveAll: resolveTable}}
+  }
 }
 
 /**
