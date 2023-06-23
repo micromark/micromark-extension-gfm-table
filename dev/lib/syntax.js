@@ -24,9 +24,7 @@ import {
   markdownLineEndingOrSpace,
   markdownSpace
 } from 'micromark-util-character'
-import {codes} from 'micromark-util-symbol/codes.js'
-import {constants} from 'micromark-util-symbol/constants.js'
-import {types} from 'micromark-util-symbol/types.js'
+import {codes, constants, types} from 'micromark-util-symbol'
 import {EditMap} from './edit-map.js'
 import {gfmTableAlign} from './infer.js'
 
