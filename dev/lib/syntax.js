@@ -37,7 +37,9 @@ import {gfmTableAlign} from './infer.js'
  */
 export function gfmTable() {
   return {
-    flow: {null: {tokenize: tokenizeTable, resolveAll: resolveTable}}
+    flow: {
+      null: {name: 'table', tokenize: tokenizeTable, resolveAll: resolveTable}
+    }
   }
 }
 

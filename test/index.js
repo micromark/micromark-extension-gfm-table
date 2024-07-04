@@ -29,6 +29,19 @@ test('markdown -> html (micromark)', async function (t) {
   )
 
   await t.test(
+    'should skip table construct if `disable.null` includes `table`',
+    async function () {
+      assert.deepEqual(
+        micromark(`123\n\n| a | b | c |\n| - | - | - |\n| d | e | f |`, {
+          extensions: [gfmTable(), {disable: {null: ['table']}}],
+          htmlExtensions: [gfmTableHtml()]
+        }),
+        '<p>123</p>\n<p>| a | b | c |\n| - | - | - |\n| d | e | f |</p>'
+      )
+    }
+  )
+
+  await t.test(
     'should not support a table w/ the head row ending in an eof (2)',
     async function () {
       assert.deepEqual(
