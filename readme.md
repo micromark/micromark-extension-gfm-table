@@ -12,24 +12,24 @@
 
 ## Contents
 
-*   [What is this?](#what-is-this)
-*   [When to use this](#when-to-use-this)
-*   [Install](#install)
-*   [Use](#use)
-*   [API](#api)
-    *   [`gfmTable()`](#gfmtable)
-    *   [`gfmTableHtml()`](#gfmtablehtml)
-*   [Bugs](#bugs)
-*   [Authoring](#authoring)
-*   [HTML](#html)
-*   [CSS](#css)
-*   [Syntax](#syntax)
-*   [Types](#types)
-*   [Compatibility](#compatibility)
-*   [Security](#security)
-*   [Related](#related)
-*   [Contribute](#contribute)
-*   [License](#license)
+* [What is this?](#what-is-this)
+* [When to use this](#when-to-use-this)
+* [Install](#install)
+* [Use](#use)
+* [API](#api)
+  * [`gfmTable()`](#gfmtable)
+  * [`gfmTableHtml()`](#gfmtablehtml)
+* [Bugs](#bugs)
+* [Authoring](#authoring)
+* [HTML](#html)
+* [CSS](#css)
+* [Syntax](#syntax)
+* [Types](#types)
+* [Compatibility](#compatibility)
+* [Security](#security)
+* [Related](#related)
+* [Contribute](#contribute)
+* [License](#license)
 
 ## What is this?
 
@@ -136,8 +136,8 @@ GitHub’s own algorithm to parse tables contains a bug.
 This bug is not present in this project.
 The issue relating to tables is:
 
-*   [GFM tables: escaped escapes are incorrectly treated as
-    escapes](https://github.com/github/cmark-gfm/issues/277)
+* [GFM tables: escaped escapes are incorrectly treated as
+  escapes](https://github.com/github/cmark-gfm/issues/277)
 
 ## Authoring
 
@@ -407,14 +407,14 @@ This package is safe.
 
 ## Related
 
-*   [`micromark-extension-gfm`][micromark-extension-gfm]
-    — support all of GFM
-*   [`mdast-util-gfm-table`][mdast-util-gfm-table]
-    — support all of GFM in mdast
-*   [`mdast-util-gfm`][mdast-util-gfm]
-    — support all of GFM in mdast
-*   [`remark-gfm`][remark-gfm]
-    — support all of GFM in remark
+* [`micromark-extension-gfm`][micromark-extension-gfm]
+  — support all of GFM
+* [`mdast-util-gfm-table`][mdast-util-gfm-table]
+  — support all of GFM in mdast
+* [`mdast-util-gfm`][mdast-util-gfm]
+  — support all of GFM in mdast
+* [`remark-gfm`][remark-gfm]
+  — support all of GFM in remark
 
 ## Contribute
 

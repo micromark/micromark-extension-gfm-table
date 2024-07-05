@@ -819,8 +819,8 @@ function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
     rowKind === 1
       ? 'tableHeader'
       : rowKind === 2
-      ? 'tableDelimiter'
-      : 'tableData'
+        ? 'tableDelimiter'
+        : 'tableData'
   // `markdown-rs` uses:
   // rowKind === 2 ? 'tableDelimiterCellValue' : 'tableCellText'
   const valueName = 'tableContent'

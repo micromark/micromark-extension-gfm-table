@@ -339,14 +339,14 @@ test('markdown -> html (micromark)', async function (t) {
   await t.test(
     'should not change how lists and lazyness work',
     async function () {
-      const doc = '   - d\n    - e'
+      const document = '   - d\n    - e'
 
       assert.deepEqual(
-        micromark(doc, {
+        micromark(document, {
           extensions: [gfmTable()],
           htmlExtensions: [gfmTableHtml()]
         }),
-        micromark(doc)
+        micromark(document)
       )
     }
   )

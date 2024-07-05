@@ -45,7 +45,7 @@ export class EditMap {
    * @returns {undefined}
    */
   add(index, remove, add) {
-    addImpl(this, index, remove, add)
+    addImplementation(this, index, remove, add)
   }
 
   // To do: add this when moving to `micromark`.
@@ -58,7 +58,7 @@ export class EditMap {
   //  * @returns {undefined}
   //  */
   // addBefore(index, remove, add) {
-  //   addImpl(this, index, remove, add, true)
+  //   addImplementation(this, index, remove, add, true)
   // }
 
   /**
@@ -133,7 +133,7 @@ export class EditMap {
  * @param {Array<Event>} add
  * @returns {undefined}
  */
-function addImpl(editMap, at, remove, add) {
+function addImplementation(editMap, at, remove, add) {
   let index = 0
 
   /* c8 ignore next 3 -- `resolve` is never called without tables, so without edits. */
