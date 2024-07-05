@@ -3,7 +3,14 @@ import type {Align} from './lib/infer.js'
 export {gfmTableHtml} from './lib/html.js'
 export {gfmTable} from './lib/syntax.js'
 
+/**
+ * Augment types.
+ */
 declare module 'micromark-util-types' {
+  /**
+   * Augment token;
+   * `align` is patched on `table` tokens.
+   */
   interface Token {
     _align?: Align[]
   }
