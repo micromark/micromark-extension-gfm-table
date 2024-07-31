@@ -256,19 +256,19 @@ table img {
 
 Tables form with the following BNF:
 
-```bnf
-gfm_table ::= gfm_table_head 0*(eol gfm_table_body_row)
+```abnf
+gfmTable ::= gfmTableHead 0*(eol gfmTableBodyRow)
 
 ; Restriction: both rows must have the same number of cells.
-gfm_table_head ::= gfm_table_row eol gfm_table_delimiter_row
+gfmTableHead ::= gfmTableRow eol gfmTableDelimiterRow
 
-gfm_table_row ::= ['|'] gfm_table_cell 0*('|' gfm_table_cell) ['|'] *space_or_tab
-gfm_table_cell ::= *space_or_tab gfm_table_text *space_or_tab
-gfm_table_text ::= 0*(line - '\\' - '|' | '\\' ['\\' | '|'])
+gfmTableRow ::= ["|"] gfmTableCell 0*("|" gfmTableCell) ["|"] *spaceOrTab
+gfmTableCell ::= *spaceOrTab gfmTableText *spaceOrTab
+gfmTableText ::= 0*(line - "\\" - "|" / "\\" ["\\" / "|"])
 
-gfm_table_delimiter_row ::= ['|'] gfm_table_delimiter_cell 0*('|' gfm_table_delimiter_cell) ['|'] *space_or_tab
-gfm_table_delimiter_cell ::= *space_or_tab gfm_table_delimiter_value *space_or_tab
-gfm_table_delimiter_value ::= [':'] 1*'-' [':']
+gfmTableDelimiterRow ::= ["|"] gfmTableDelimiterCell 0*("|" gfmTableDelimiterCell) ["|"] *spaceOrTab
+gfmTableDelimiterCell ::= *spaceOrTab gfmTableDelimiterValue *spaceOrTab
+gfmTableDelimiterValue ::= [":"] 1*"-" [":"]
 ```
 
 As this construct occurs in flow, like all flow constructs, it must be
