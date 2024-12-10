@@ -116,9 +116,10 @@ export class EditMap {
 
     while (slice) {
       // NOTE: do not use spread operator here, it will cause a stack overflow.
-      for (let i = 0; i < slice.length; i++) {
-        events.push(slice[i])
+      for (const element of slice) {
+        events.push(element)
       }
+
       slice = vecs.pop()
     }
 
