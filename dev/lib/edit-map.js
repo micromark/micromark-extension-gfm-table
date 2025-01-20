@@ -109,13 +109,16 @@ export class EditMap {
       events.length = this.map[index][0]
     }
 
-    vecs.push([...events])
+    vecs.push(events.slice())
     events.length = 0
 
     let slice = vecs.pop()
 
     while (slice) {
-      events.push(...slice)
+      for (const element of slice) {
+        events.push(element)
+      }
+
       slice = vecs.pop()
     }
 
