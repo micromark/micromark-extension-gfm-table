@@ -530,7 +530,7 @@ test('markdown -> html (micromark)', async function (t) {
 test('fixtures', async function (t) {
   const base = new URL('fixtures/', import.meta.url)
 
-  await createGfmFixtures(base, {rehypeStringify: {closeSelfClosing: true}})
+  await createGfmFixtures(base, {toHtml: {closeSelfClosing: true}})
 
   const files = await fs.readdir(base)
   const extname = '.md'
