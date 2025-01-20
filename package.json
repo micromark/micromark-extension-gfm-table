@@ -90,18 +90,33 @@
     "overrides": [
       {
         "files": [
-          "test/**/*.js"
+          "**/*.d.ts"
         ],
         "rules": {
-          "no-await-in-loop": 0
+          "@typescript-eslint/array-type": [
+            "error",
+            {
+              "default": "generic"
+            }
+          ],
+          "@typescript-eslint/ban-types": [
+            "error",
+            {
+              "extendDefaults": true
+            }
+          ],
+          "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "interface"
+          ]
         }
       },
       {
         "files": [
-          "**/*.ts"
+          "test/**/*.js"
         ],
         "rules": {
-          "@typescript-eslint/consistent-type-definitions": 0
+          "no-await-in-loop": "off"
         }
       }
     ],

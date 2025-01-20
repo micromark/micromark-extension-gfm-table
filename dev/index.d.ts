@@ -8,30 +8,48 @@ export {gfmTable} from './lib/syntax.js'
  */
 declare module 'micromark-util-types' {
   /**
-   * Augment token;
-   * `align` is patched on `table` tokens.
+   * State tracked to compile events as HTML,
+   * extended by `micromark-extension-gfm-table`.
    */
-  interface Token {
-    _align?: Align[]
+  interface CompileData {
+    /**
+     * Alignment of current table.
+     */
+    tableAlign?: Array<Align> | undefined
+    /**
+     * Current table column.
+     */
+    tableColumn?: number | undefined
   }
 
+  /**
+   * Augment token;
+   * `align` is patched on `table` tokens by
+   * `micromark-extension-gfm-table`.
+   */
+  interface Token {
+    /**
+     * Alignment of current table.
+     */
+    _align?: Array<Align> | undefined
+  }
+
+  /**
+   * Map of allowed token types,
+   * extended by `micromark-extension-gfm-table`.
+   */
   interface TokenTypeMap {
-    table: 'table'
     tableBody: 'tableBody'
     tableCellDivider: 'tableCellDivider'
     tableContent: 'tableContent'
     tableData: 'tableData'
-    tableDelimiter: 'tableDelimiter'
     tableDelimiterFiller: 'tableDelimiterFiller'
     tableDelimiterMarker: 'tableDelimiterMarker'
     tableDelimiterRow: 'tableDelimiterRow'
-    tableHead: 'tableHead'
+    tableDelimiter: 'tableDelimiter'
     tableHeader: 'tableHeader'
+    tableHead: 'tableHead'
     tableRow: 'tableRow'
-  }
-
-  interface CompileData {
-    tableAlign?: Align[]
-    tableColumn?: number
+    table: 'table'
   }
 }
