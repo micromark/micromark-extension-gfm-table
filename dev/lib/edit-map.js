@@ -34,6 +34,14 @@ export class EditMap {
      * @type {Array<Change>}
      */
     this.map = []
+
+    /**
+     * Changes by index, so `add` does not scan `map` (quadratic on
+     * table-heavy documents).
+     *
+     * @type {Map<number, Change>}
+     */
+    this.index = new Map()
   }
 
   /**
@@ -124,6 +132,7 @@ export class EditMap {
 
     // Truncate everything.
     this.map.length = 0
+    this.index.clear()
   }
 }
 
@@ -137,32 +146,31 @@ export class EditMap {
  * @returns {undefined}
  */
 function addImplementation(editMap, at, remove, add) {
-  let index = 0
-
   /* c8 ignore next 3 -- `resolve` is never called without tables, so without edits. */
   if (remove === 0 && add.length === 0) {
     return
   }
 
-  while (index < editMap.map.length) {
-    if (editMap.map[index][0] === at) {
-      editMap.map[index][1] += remove
+  const existing = editMap.index.get(at)
 
-      // To do: before not used by tables, use when moving to micromark.
-      // if (before) {
-      //   add.push(...editMap.map[index][2])
-      //   editMap.map[index][2] = add
-      // } else {
-      editMap.map[index][2].push(...add)
-      // }
+  if (existing) {
+    existing[1] += remove
 
-      return
-    }
+    // To do: before not used by tables, use when moving to micromark.
+    // if (before) {
+    //   add.push(...existing[2])
+    //   existing[2] = add
+    // } else {
+    existing[2].push(...add)
+    // }
 
-    index += 1
+    return
   }
 
-  editMap.map.push([at, remove, add])
+  /** @type {Change} */
+  const change = [at, remove, add]
+  editMap.map.push(change)
+  editMap.index.set(at, change)
 }
 
 // /**
