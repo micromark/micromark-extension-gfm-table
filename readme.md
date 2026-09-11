@@ -432,84 +432,84 @@ abide by its terms.
 
 <!-- Definitions -->
 
-[build-badge]: https://github.com/micromark/micromark-extension-gfm-table/workflows/main/badge.svg
+[api-gfm-table]: #gfmtable
 
-[build]: https://github.com/micromark/micromark-extension-gfm-table/actions
-
-[coverage-badge]: https://img.shields.io/codecov/c/github/micromark/micromark-extension-gfm-table.svg
-
-[coverage]: https://codecov.io/github/micromark/micromark-extension-gfm-table
-
-[downloads-badge]: https://img.shields.io/npm/dm/micromark-extension-gfm-table.svg
-
-[downloads]: https://www.npmjs.com/package/micromark-extension-gfm-table
-
-[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=micromark-extension-gfm-table
-
-[size]: https://bundlejs.com/?q=micromark-extension-gfm-table
-
-[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
-
-[backers-badge]: https://opencollective.com/unified/backers/badge.svg
-
-[collective]: https://opencollective.com/unified
-
-[chat-badge]: https://img.shields.io/badge/chat-discussions-success.svg
-
-[chat]: https://github.com/micromark/micromark/discussions
-
-[npm]: https://docs.npmjs.com/cli/install
-
-[esmsh]: https://esm.sh
-
-[license]: license
+[api-gfm-table-html]: #gfmtablehtml
 
 [author]: https://wooorm.com
 
-[contributing]: https://github.com/micromark/.github/blob/main/contributing.md
+[backers-badge]: https://opencollective.com/unified/backers/badge.svg
 
-[support]: https://github.com/micromark/.github/blob/main/support.md
+[build]: https://github.com/micromark/micromark-extension-gfm-table/actions
+
+[build-badge]: https://github.com/micromark/micromark-extension-gfm-table/workflows/main/badge.svg
+
+[chat]: https://github.com/micromark/micromark/discussions
+
+[chat-badge]: https://img.shields.io/badge/chat-discussions-success.svg
 
 [coc]: https://github.com/micromark/.github/blob/main/code-of-conduct.md
 
-[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+[collective]: https://opencollective.com/unified
 
-[typescript]: https://www.typescriptlang.org
+[contributing]: https://github.com/micromark/.github/blob/main/contributing.md
+
+[coverage]: https://codecov.io/github/micromark/micromark-extension-gfm-table
+
+[coverage-badge]: https://img.shields.io/codecov/c/github/micromark/micromark-extension-gfm-table.svg
 
 [development]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
 
-[micromark]: https://github.com/micromark/micromark
+[downloads]: https://www.npmjs.com/package/micromark-extension-gfm-table
 
-[micromark-extension]: https://github.com/micromark/micromark#syntaxextension
+[downloads-badge]: https://img.shields.io/npm/dm/micromark-extension-gfm-table.svg
 
-[micromark-html-extension]: https://github.com/micromark/micromark#htmlextension
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
-[micromark-content-type]: https://github.com/micromark/micromark#content-types
+[esmsh]: https://esm.sh
 
-[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
-
-[mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
-
-[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
-
-[remark-gfm]: https://github.com/remarkjs/remark-gfm
-
-[tables]: https://github.github.com/gfm/#tables-extension-
+[github-markdown-css]: https://github.com/sindresorhus/github-markdown-css
 
 [html-table]: https://html.spec.whatwg.org/multipage/tables.html#the-table-element
 
 [html-tbody]: https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element
 
-[html-thead]: https://html.spec.whatwg.org/multipage/tables.html#the-thead-element
-
-[html-tr]: https://html.spec.whatwg.org/multipage/tables.html#the-tr-element
-
 [html-td]: https://html.spec.whatwg.org/multipage/tables.html#the-td-element
 
 [html-th]: https://html.spec.whatwg.org/multipage/tables.html#the-th-element
 
-[github-markdown-css]: https://github.com/sindresorhus/github-markdown-css
+[html-thead]: https://html.spec.whatwg.org/multipage/tables.html#the-thead-element
 
-[api-gfm-table]: #gfmtable
+[html-tr]: https://html.spec.whatwg.org/multipage/tables.html#the-tr-element
 
-[api-gfm-table-html]: #gfmtablehtml
+[license]: license
+
+[mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
+
+[mdast-util-gfm-table]: https://github.com/syntax-tree/mdast-util-gfm-table
+
+[micromark]: https://github.com/micromark/micromark
+
+[micromark-content-type]: https://github.com/micromark/micromark#content-types
+
+[micromark-extension]: https://github.com/micromark/micromark#syntaxextension
+
+[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
+
+[micromark-html-extension]: https://github.com/micromark/micromark#htmlextension
+
+[npm]: https://docs.npmjs.com/cli/install
+
+[remark-gfm]: https://github.com/remarkjs/remark-gfm
+
+[size]: https://bundlejs.com/?q=micromark-extension-gfm-table
+
+[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=micromark-extension-gfm-table
+
+[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
+
+[support]: https://github.com/micromark/.github/blob/main/support.md
+
+[tables]: https://github.github.com/gfm/#tables-extension-
+
+[typescript]: https://www.typescriptlang.org

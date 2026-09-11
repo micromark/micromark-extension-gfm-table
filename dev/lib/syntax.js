@@ -37,6 +37,8 @@ export function gfmTable() {
 }
 
 /**
+ * Tokenizer for GFM tables.
+ *
  * @this {TokenizeContext}
  * @type {Tokenizer}
  */
@@ -69,14 +71,16 @@ function tokenizeTable(effects, ok, nok) {
     let index = self.events.length - 1
 
     while (index > -1) {
-      const type = self.events[index][1].type
+      const {type} = self.events[index][1]
       if (
         type === types.lineEnding ||
         // Note: markdown-rs uses `whitespace` instead of `linePrefix`
         type === types.linePrefix
-      )
+      ) {
         index--
-      else break
+      } else {
+        break
+      }
     }
 
     const tail = index > -1 ? self.events[index][1].type : null
@@ -797,12 +801,19 @@ function resolveTable(events, context) {
  * Generate a cell.
  *
  * @param {EditMap} map
+ *   Edit map to apply to.
  * @param {Readonly<TokenizeContext>} context
+ *   Tokenize context.
  * @param {Readonly<Range>} range
+ *   Range of the cell within events.
  * @param {RowKind} rowKind
+ *   Type of row.
  * @param {number | undefined} rowEnd
+ *   Index of the end of the row, if known.
  * @param {Token | undefined} previousCell
+ *   Previous cell token, if any.
  * @returns {Token | undefined}
+ *   Current cell token after flushing, if any.
  */
 // eslint-disable-next-line max-params
 function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
@@ -907,10 +918,17 @@ function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
  * Generate table end (and table body end).
  *
  * @param {Readonly<EditMap>} map
+ *   Edit map to apply to.
  * @param {Readonly<TokenizeContext>} context
+ *   Tokenize context.
  * @param {number} index
+ *   Index within the events where the table end should be inserted.
  * @param {Token} table
+ *   Table token.
  * @param {Token | undefined} tableBody
+ *   Table body token, if any.
+ * @returns {undefined}
+ *   Nothing.
  */
 // eslint-disable-next-line max-params
 function flushTableEnd(map, context, index, table, tableBody) {
@@ -930,9 +948,14 @@ function flushTableEnd(map, context, index, table, tableBody) {
 }
 
 /**
+ * Get the point (start or end) for a given event in the list of events.
+ *
  * @param {Readonly<Array<Event>>} events
+ *   List of events.
  * @param {number} index
+ *   Index of the event to get the point for.
  * @returns {Readonly<Point>}
+ *   Start point for enter and end point for exit.
  */
 function getPoint(events, index) {
   const event = events[index]

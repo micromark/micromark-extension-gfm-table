@@ -138,9 +138,14 @@ export function gfmTableHtml() {
 }
 
 /**
+ * Replace escaped characters in table cells.
+ *
  * @param {string} $0
+ *   Whole.
  * @param {string} $1
+ *   Escaped character (either a backslash or a pipe).
  * @returns {string}
+ *   Replacement for the escaped character.
  */
 function replace($0, $1) {
   // Pipes work, backslashes don’t (but can’t escape pipes).
