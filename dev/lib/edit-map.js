@@ -48,9 +48,13 @@ export class EditMap {
    * Create an edit: a remove and/or add at a certain place.
    *
    * @param {number} index
+   *   Index at which to apply the edit.
    * @param {number} remove
+   *   Count of items to remove at the index.
    * @param {Array<Event>} add
+   *   Items to add at the index.
    * @returns {undefined}
+   *   Nothing.
    */
   add(index, remove, add) {
     addImplementation(this, index, remove, add)
@@ -73,7 +77,9 @@ export class EditMap {
    * Done, change the events.
    *
    * @param {Array<Event>} events
+   *   List of events to apply the edits to.
    * @returns {undefined}
+   *   Nothing.
    */
   consume(events) {
     this.map.sort(function (a, b) {
@@ -140,10 +146,15 @@ export class EditMap {
  * Create an edit.
  *
  * @param {EditMap} editMap
+ *   Edit map to apply to.
  * @param {number} at
+ *   Index at which to apply the edit.
  * @param {number} remove
+ *   Count of items to remove at the index.
  * @param {Array<Event>} add
+ *   Items to add at the index.
  * @returns {undefined}
+ *   Nothing.
  */
 function addImplementation(editMap, at, remove, add) {
   /* c8 ignore next 3 -- `resolve` is never called without tables, so without edits. */
